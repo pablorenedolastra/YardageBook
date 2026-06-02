@@ -1,5 +1,5 @@
 {
-  "name": "yb-scaffold",
+  "name": "yardagebook",
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
