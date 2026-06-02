@@ -33,5 +33,6 @@ const styles = StyleSheet.create({
   texture: {
     ...StyleSheet.absoluteFill,
     opacity: 0.09,
+    pointerEvents: 'none', // capa decorativa: nunca intercepta toques
   },
 });
