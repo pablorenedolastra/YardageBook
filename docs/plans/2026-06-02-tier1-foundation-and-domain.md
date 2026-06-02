@@ -13,6 +13,7 @@
 ## Contexto para quien ejecuta
 
 El repo ya existe con esta estructura (no la recrees):
+
 ```
 YardageBook/
 ├── docs/specs/2026-06-02-yardagebook-design.md   ← diseño aprobado (léelo)
@@ -21,6 +22,7 @@ YardageBook/
 ├── .gitignore                                     ← ya escrito (Expo), NO sobrescribir
 └── .git/                                          ← repo inicializado, rama main, remoto origin en GitHub
 ```
+
 La ruta absoluta del repo es `/Users/parenedo/Claude PRL/YardageBook` (ojo: tiene un espacio, usa comillas en bash).
 
 **El modelo físico de los coeficientes** (temperatura, humedad, inclinación) usa valores por defecto razonables y **parametrizables** (constantes exportadas). No son definitivos: son un punto de partida defendible que el usuario afinará con experiencia real. Eso es intencional, no un placeholder.
@@ -57,6 +59,7 @@ Más ficheros de configuración en la raíz (Tasks 1-3): `package.json`, `tsconf
 ## Task 1: Scaffolding del proyecto Expo + TypeScript
 
 **Files:**
+
 - Create: todo el andamiaje de Expo (App, package.json, app.json, babel.config.js, tsconfig.json) dentro del repo, **sin** tocar `README.md`, `.gitignore`, `.git`, ni `docs/`.
 
 - [ ] **Step 1: Generar el proyecto Expo en un directorio temporal**
@@ -64,14 +67,17 @@ Más ficheros de configuración en la raíz (Tasks 1-3): `package.json`, `tsconf
 Se genera fuera para no chocar con los ficheros que ya existen, y luego se copia dentro.
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL" && npx create-expo-app@latest yb-scaffold --template blank-typescript
 ```
+
 Expected: crea `/Users/parenedo/Claude PRL/yb-scaffold` con un proyecto Expo TS mínimo (App.tsx, package.json, app.json, tsconfig.json, babel.config.js) y termina con "Your project is ready!".
 
 - [ ] **Step 2: Copiar el andamiaje al repo sin pisar lo existente**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL" && rsync -a \
   --exclude '.git' \
@@ -80,22 +86,27 @@ cd "/Users/parenedo/Claude PRL" && rsync -a \
   --exclude '.gitignore' \
   yb-scaffold/ "YardageBook/" && rm -rf yb-scaffold
 ```
+
 Expected: el comando termina sin error. `yb-scaffold` desaparece. Ahora `YardageBook/` contiene `App.tsx`, `package.json`, `app.json`, `tsconfig.json`, `babel.config.js`, etc.
 
 - [ ] **Step 3: Instalar dependencias**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npm install
 ```
+
 Expected: se crea `node_modules/` y `package-lock.json`. Termina sin errores.
 
 - [ ] **Step 4: Verificar que el proyecto compila TypeScript**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx tsc --noEmit
 ```
+
 Expected: sin salida (exit code 0) = no hay errores de tipos.
 
 - [ ] **Step 5: Commit**
@@ -109,6 +120,7 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "chor
 ## Task 2: Configurar Jest (preset jest-expo)
 
 **Files:**
+
 - Create: `jest.config.js`
 - Modify: `package.json` (añadir scripts y devDependencies)
 - Create: `src/domain/smoke.test.ts` (test de humo temporal para validar que Jest corre)
@@ -116,9 +128,11 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "chor
 - [ ] **Step 1: Instalar dependencias de test**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npm install --save-dev jest-expo jest @types/jest
 ```
+
 Expected: termina sin errores; aparecen en `devDependencies` de `package.json`.
 
 - [ ] **Step 2: Crear `jest.config.js`**
@@ -133,6 +147,7 @@ module.exports = {
 - [ ] **Step 3: Añadir scripts a `package.json`**
 
 En el objeto `"scripts"` de `package.json`, añade estas tres entradas (junto a las que ya genera Expo, sin borrar las existentes):
+
 ```json
 "test": "jest",
 "typecheck": "tsc --noEmit",
@@ -142,6 +157,7 @@ En el objeto `"scripts"` de `package.json`, añade estas tres entradas (junto a 
 - [ ] **Step 4: Escribir un test de humo**
 
 Create `src/domain/smoke.test.ts`:
+
 ```ts
 describe('jest setup', () => {
   it('runs a trivial test', () => {
@@ -153,14 +169,17 @@ describe('jest setup', () => {
 - [ ] **Step 5: Ejecutar los tests y verificar que pasan**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npm test
 ```
+
 Expected: PASS, 1 test pasado en `src/domain/smoke.test.ts`.
 
 - [ ] **Step 6: Borrar el test de humo**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && rm src/domain/smoke.test.ts
 ```
@@ -176,6 +195,7 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "chor
 ## Task 3: Configurar ESLint + Prettier + TypeScript estricto
 
 **Files:**
+
 - Create/Modify: config de ESLint (`eslint.config.js` que genera `expo lint`)
 - Create: `.prettierrc.json`
 - Modify: `tsconfig.json` (asegurar `strict: true`)
@@ -184,14 +204,17 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "chor
 - [ ] **Step 1: Inicializar ESLint de Expo**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx expo lint
 ```
+
 Expected: la primera vez pregunta si instalar `eslint` y `eslint-config-expo`; acepta. Crea el fichero de config de ESLint y ejecuta el linter (sin errores sobre el código actual).
 
 - [ ] **Step 2: Instalar Prettier**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npm install --save-dev prettier
 ```
@@ -210,6 +233,7 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && npm install --save-dev prettier
 - [ ] **Step 4: Asegurar TypeScript estricto en `tsconfig.json`**
 
 Abre `tsconfig.json`. Debe extender la base de Expo y tener `strict: true`. Si no está, déjalo así:
+
 ```json
 {
   "extends": "expo/tsconfig.base",
@@ -222,6 +246,7 @@ Abre `tsconfig.json`. Debe extender la base de Expo y tener `strict: true`. Si n
 - [ ] **Step 5: Añadir script `format` a `package.json`**
 
 En `"scripts"`:
+
 ```json
 "format": "prettier --write ."
 ```
@@ -229,9 +254,11 @@ En `"scripts"`:
 - [ ] **Step 6: Formatear y verificar lint + typecheck**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npm run format && npm run lint && npm run typecheck
 ```
+
 Expected: Prettier reformatea ficheros; lint sin errores; typecheck sin salida (exit 0).
 
 - [ ] **Step 7: Commit**
@@ -247,6 +274,7 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "chor
 Tipos puros, sin lógica en tiempo de ejecución. Se validan con `typecheck` y al ser importados por los tests de las Tasks 5-7.
 
 **Files:**
+
 - Create: `src/domain/models/units.ts`
 - Create: `src/domain/models/profile.ts`
 - Create: `src/domain/models/weather.ts`
@@ -323,9 +351,11 @@ export * from './club-matrix';
 - [ ] **Step 6: Verificar typecheck**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npm run typecheck
 ```
+
 Expected: sin salida (exit 0).
 
 - [ ] **Step 7: Commit**
@@ -341,12 +371,14 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "feat
 Función pura: la distancia efectiva al objetivo aumenta cuesta arriba y disminuye cuesta abajo. Modelo v1: metros efectivos = distancia + desnivel × factor. El desnivel se expresa en la misma unidad que la distancia (positivo = cuesta arriba, negativo = cuesta abajo).
 
 **Files:**
+
 - Create: `src/domain/adjustments/inclination.ts`
 - Test: `src/domain/adjustments/inclination.test.ts`
 
 - [ ] **Step 1: Escribir el test que falla**
 
 Create `src/domain/adjustments/inclination.test.ts`:
+
 ```ts
 import { adjustForInclination } from './inclination';
 
@@ -368,14 +400,17 @@ describe('adjustForInclination', () => {
 - [ ] **Step 2: Ejecutar el test y verificar que falla**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/domain/adjustments/inclination.test.ts
 ```
+
 Expected: FAIL — "Cannot find module './inclination'".
 
 - [ ] **Step 3: Implementar el mínimo**
 
 Create `src/domain/adjustments/inclination.ts`:
+
 ```ts
 /**
  * Metros efectivos añadidos por cada metro de desnivel. Parametrizable;
@@ -398,9 +433,11 @@ export function adjustForInclination(distance: number, elevationChange: number):
 - [ ] **Step 4: Ejecutar el test y verificar que pasa**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/domain/adjustments/inclination.test.ts
 ```
+
 Expected: PASS, 3 tests.
 
 - [ ] **Step 5: Commit**
@@ -416,12 +453,14 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "feat
 Función pura: el carry de un palo cambia con la densidad del aire. Aire más cálido y/o más húmedo es menos denso → la bola vuela más. El ajuste es la **diferencia** entre las condiciones de hoy y las condiciones base de la matriz. Modelo v1: factor lineal sobre el carry.
 
 **Files:**
+
 - Create: `src/domain/adjustments/weather.ts`
 - Test: `src/domain/adjustments/weather.test.ts`
 
 - [ ] **Step 1: Escribir el test que falla**
 
 Create `src/domain/adjustments/weather.test.ts`:
+
 ```ts
 import { adjustCarryForWeather } from './weather';
 import { WeatherConditions } from '../models';
@@ -457,14 +496,17 @@ describe('adjustCarryForWeather', () => {
 - [ ] **Step 2: Ejecutar el test y verificar que falla**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/domain/adjustments/weather.test.ts
 ```
+
 Expected: FAIL — "Cannot find module './weather'".
 
 - [ ] **Step 3: Implementar el mínimo**
 
 Create `src/domain/adjustments/weather.ts`:
+
 ```ts
 import { WeatherConditions } from '../models';
 
@@ -496,9 +538,11 @@ export function adjustCarryForWeather(
 - [ ] **Step 4: Ejecutar el test y verificar que pasa**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/domain/adjustments/weather.test.ts
 ```
+
 Expected: PASS, 4 tests.
 
 - [ ] **Step 5: Crear `src/domain/adjustments/index.ts` (barrel)**
@@ -521,12 +565,14 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "feat
 Función pura que combina los dos ajustes: calcula el objetivo efectivo (inclinación), normaliza el carry de cada palo a las condiciones de hoy (meteo) y elige el palo cuyo carry de hoy se acerca más al objetivo efectivo. Devuelve `null` si la matriz está vacía. En caso de empate, gana el primer palo en orden de lista.
 
 **Files:**
+
 - Create: `src/domain/recommendation/recommend.ts`
 - Test: `src/domain/recommendation/recommend.test.ts`
 
 - [ ] **Step 1: Escribir el test que falla**
 
 Create `src/domain/recommendation/recommend.test.ts`:
+
 ```ts
 import { recommendClub } from './recommend';
 import { ClubMatrix } from '../models';
@@ -582,14 +628,17 @@ describe('recommendClub', () => {
 - [ ] **Step 2: Ejecutar el test y verificar que falla**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/domain/recommendation/recommend.test.ts
 ```
+
 Expected: FAIL — "Cannot find module './recommend'".
 
 - [ ] **Step 3: Implementar el mínimo**
 
 Create `src/domain/recommendation/recommend.ts`:
+
 ```ts
 import { ClubMatrix, ClubMatrixEntry, WeatherConditions } from '../models';
 import { adjustForInclination, adjustCarryForWeather } from '../adjustments';
@@ -648,9 +697,11 @@ export function recommendClub(input: RecommendationInput): Recommendation | null
 - [ ] **Step 4: Ejecutar el test y verificar que pasa**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/domain/recommendation/recommend.test.ts
 ```
+
 Expected: PASS, 3 tests.
 
 - [ ] **Step 5: Crear `src/domain/recommendation/index.ts` (barrel)**
@@ -670,6 +721,7 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "feat
 ## Task 8: Barrel raíz del dominio y verificación final
 
 **Files:**
+
 - Create: `src/domain/index.ts`
 
 - [ ] **Step 1: Crear `src/domain/index.ts` (barrel raíz)**
@@ -683,9 +735,11 @@ export * from './recommendation';
 - [ ] **Step 2: Verificación completa (typecheck + lint + todos los tests)**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npm run typecheck && npm run lint && npm test
 ```
+
 Expected: typecheck exit 0; lint sin errores; Jest PASS con 10 tests (3 inclinación + 4 meteo + 3 recomendación).
 
 - [ ] **Step 3: Commit**
@@ -699,6 +753,7 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "feat
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && git push origin main
 ```
+
 Expected: la rama main sube a `origin` (github.com/pablorenedolastra/YardageBook).
 
 ---
