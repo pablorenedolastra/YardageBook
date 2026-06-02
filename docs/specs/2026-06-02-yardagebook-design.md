@@ -16,16 +16,18 @@ inclinación del tiro y las condiciones meteo (temperatura + humedad), recomiend
 distancias reales que pega con cada palo).
 
 Lo que la hace personal y justifica el nombre "YardageBook": no recomienda en
-abstracto, recomienda según lo que *tú* pegas con cada palo.
+abstracto, recomienda según lo que _tú_ pegas con cada palo.
 
 ### Una frase
-> *"Estoy a X metros, con estas condiciones → tu app me dice: usa este palo."*
+
+> _"Estoy a X metros, con estas condiciones → tu app me dice: usa este palo."_
 
 ---
 
 ## 2. Alcance
 
 ### Dentro de la v1 (Tier 1)
+
 - **Profile:** crear perfil (nombre, unidades metros/yardas).
 - **Club Matrix MANUAL:** el usuario introduce la distancia de carry de cada palo.
 - **Condiciones base de la matriz:** temperatura + humedad en las que se midieron
@@ -38,6 +40,7 @@ abstracto, recomienda según lo que *tú* pegas con cada palo.
 - **Output club:** una recomendación de palo.
 
 ### Fuera de la v1 (backlog explícito)
+
 Tier 2: lie del golpe, otras opciones de palo, matriz AUTO (aprende del
 historial), notas personales por hoyo.
 Tier 3: bloquear condiciones meteo, app de reloj, comunicación por voz.
@@ -79,30 +82,37 @@ Funciona en dos pasos limpios y separados. Ambos son **funciones puras** (mismas
 entradas → misma salida).
 
 **Paso 1 — Objetivo efectivo** (ajuste de inclinación):
+
 ```
 objetivo_efectivo = distancia_real + ajuste_inclinacion
     (cuesta arriba suma metros, cuesta abajo resta)
 ```
+
 La inclinación afecta al objetivo (geometría del tiro).
 
 **Paso 2 — Carry de cada palo HOY** (ajuste de meteo):
+
 ```
 para cada palo:
     carry_hoy = carry_medido ajustado de (condicionesBase de la matriz) → (meteo de HOY)
     (si hoy hace más calor/humedad que cuando se midió → carry_hoy > carry_medido)
 ```
+
 La meteo afecta a cada palo (densidad del aire). El ajuste es la **diferencia**
 entre las condiciones de hoy y las condiciones base de la matriz — nunca un valor
 absoluto.
 
 **Paso 3 — Elegir:**
+
 ```
 recomendar el palo cuyo carry_hoy se acerca más al objetivo_efectivo
 ```
+
 Devuelve **1 palo** en v1. La arquitectura deja la puerta abierta a "otras
 opciones" (Tier 2) sin reescribir.
 
 ### Lógica física a definir en el plan
+
 Las fórmulas y coeficientes concretos (metros por grado de temperatura, por % de
 humedad, por % de pendiente) se definen como **tarea explícita** en el plan de
 implementación. v1 usará un modelo simple y **parametrizable**, fácil de afinar
@@ -166,16 +176,16 @@ YardageBook/
 
 ## 7. Librerías
 
-| Necesidad | Librería |
-|-----------|----------|
-| Framework | Expo (SDK más reciente) + expo-router (navegación por archivos) |
-| Lenguaje | TypeScript (estricto) |
-| Mapa satélite + marcar punto | react-native-maps |
-| GPS | expo-location |
-| Almacenamiento local | expo-sqlite o AsyncStorage (se decide en el plan según volumen) |
-| Meteo | API externa — Open-Meteo (gratis y sin API key) como candidata |
-| Tests | Jest + React Native Testing Library |
-| Calidad | ESLint + Prettier + TypeScript strict |
+| Necesidad                    | Librería                                                        |
+| ---------------------------- | --------------------------------------------------------------- |
+| Framework                    | Expo (SDK más reciente) + expo-router (navegación por archivos) |
+| Lenguaje                     | TypeScript (estricto)                                           |
+| Mapa satélite + marcar punto | react-native-maps                                               |
+| GPS                          | expo-location                                                   |
+| Almacenamiento local         | expo-sqlite o AsyncStorage (se decide en el plan según volumen) |
+| Meteo                        | API externa — Open-Meteo (gratis y sin API key) como candidata  |
+| Tests                        | Jest + React Native Testing Library                             |
+| Calidad                      | ESLint + Prettier + TypeScript strict                           |
 
 ---
 
@@ -195,7 +205,7 @@ YardageBook/
 ## 9. Camino a publicación
 
 - **Desarrollo diario:** Expo Go en el iPhone (QR, sin cables) para iterar rápido.
-- **GPS/mapas:** requieren un *development build* (no solo Expo Go) por usar
+- **GPS/mapas:** requieren un _development build_ (no solo Expo Go) por usar
   módulos nativos — paso sencillo, quedará documentado.
 - **Publicar iPhone:** cuenta Apple Developer (**99 $/año**). Build y subida con
   EAS Build (nube de Expo, sin pelearse con Xcode).
@@ -204,6 +214,7 @@ YardageBook/
   días) antes de publicar al público — es tiempo, no dinero.
 
 ### Costes obligatorios del proyecto
+
 - Desarrollo y testing: **0 €** (Expo Go, plan gratuito de EAS, Open-Meteo gratis,
   datos local-only → cero servidor).
 - iPhone: 99 $/año. Android: 25 $ una vez.
@@ -212,11 +223,11 @@ YardageBook/
 
 ## 10. Decisiones clave (resumen)
 
-| Decisión | Elección | Por qué |
-|----------|----------|---------|
-| Propósito | Recomendador de palo | Núcleo del Functionalities Map |
-| Lógica reco v1 | Distancia + inclinación + temp/humedad | Acotado y con sentido físico; sin viento/lie/altitud |
-| GPS | Marcar punto en mapa | Cero base de datos de campos; funciona globalmente |
-| Datos | Local-only en el móvil | Sin servidor, sin login, sin GDPR; máxima velocidad de lanzamiento |
-| Condiciones base | Una para toda la matriz | Más simple de mantener |
-| Stack | React Native + Expo + TS | Un código para iOS+Android; alineado con React/TS; camino corto a la App Store |
+| Decisión         | Elección                               | Por qué                                                                        |
+| ---------------- | -------------------------------------- | ------------------------------------------------------------------------------ |
+| Propósito        | Recomendador de palo                   | Núcleo del Functionalities Map                                                 |
+| Lógica reco v1   | Distancia + inclinación + temp/humedad | Acotado y con sentido físico; sin viento/lie/altitud                           |
+| GPS              | Marcar punto en mapa                   | Cero base de datos de campos; funciona globalmente                             |
+| Datos            | Local-only en el móvil                 | Sin servidor, sin login, sin GDPR; máxima velocidad de lanzamiento             |
+| Condiciones base | Una para toda la matriz                | Más simple de mantener                                                         |
+| Stack            | React Native + Expo + TS               | Un código para iOS+Android; alineado con React/TS; camino corto a la App Store |
