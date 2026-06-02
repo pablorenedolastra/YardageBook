@@ -27,4 +27,17 @@ describe('AppBackground', () => {
       : root.props.style;
     expect(flat.backgroundColor).toBe(theme.colors.paper);
   });
+
+  it('renderiza la capa de textura de papel por encima del fondo', () => {
+    render(
+      <AppBackground>
+        <Text>x</Text>
+      </AppBackground>,
+    );
+    const texture = screen.getByTestId('paper-texture');
+    const flat = Array.isArray(texture.props.style)
+      ? Object.assign({}, ...texture.props.style)
+      : texture.props.style;
+    expect(flat.opacity).toBeCloseTo(0.09, 2);
+  });
 });
