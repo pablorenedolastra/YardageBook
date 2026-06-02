@@ -1,5 +1,3 @@
-jest.mock('expo-font', () => ({ useFonts: jest.fn(() => [true, null]) }));
-
 import { render, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import { AppBackground } from './app-background';
