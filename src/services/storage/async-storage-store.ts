@@ -1,0 +1,17 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { KeyValueStore } from './key-value-store';
+
+/** Implementación de KeyValueStore respaldada por AsyncStorage (dispositivo). */
+export class AsyncStorageStore implements KeyValueStore {
+  async get(key: string): Promise<string | null> {
+    return AsyncStorage.getItem(key);
+  }
+
+  async set(key: string, value: string): Promise<void> {
+    await AsyncStorage.setItem(key, value);
+  }
+
+  async remove(key: string): Promise<void> {
+    await AsyncStorage.removeItem(key);
+  }
+}
