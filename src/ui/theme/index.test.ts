@@ -1,3 +1,5 @@
+jest.mock('expo-font', () => ({ useFonts: jest.fn(() => [true, null]) }));
+
 import { theme } from './index';
 
 describe('theme', () => {

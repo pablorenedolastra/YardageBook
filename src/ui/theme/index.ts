@@ -21,3 +21,4 @@ export * from './typography';
 export * from './spacing';
 export * from './icons';
 export * from './color-utils';
+export * from './use-app-fonts';
