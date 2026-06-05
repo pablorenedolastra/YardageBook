@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { TabBar } from './tab-bar';
+import { TabBar, type TabBarProps } from './tab-bar';
 
 const METRICS = {
   frame: { x: 0, y: 0, width: 390, height: 844 },
@@ -8,19 +8,21 @@ const METRICS = {
 };
 
 // Estado mínimo simulando las props que expo-router Tabs pasa a tabBar.
-function makeProps(activeIndex: number) {
-  const routes = [
-    { key: 'index', name: 'index' },
-    { key: 'yardage-book', name: 'yardage-book' },
-    { key: 'profile', name: 'profile' },
-  ];
+function makeProps(activeIndex: number): TabBarProps {
   return {
-    state: { index: activeIndex, routes },
+    state: {
+      index: activeIndex,
+      routes: [
+        { key: 'index', name: 'index' },
+        { key: 'yardage-book', name: 'yardage-book' },
+        { key: 'profile', name: 'profile' },
+      ],
+    },
     navigation: {
       navigate: () => {},
       emit: () => ({ defaultPrevented: false }),
     },
-  } as never;
+  };
 }
 
 function renderTabBar(activeIndex: number) {
