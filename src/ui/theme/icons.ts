@@ -5,6 +5,8 @@
 export const icons = {
   shot: 'target',
   clubs: 'grid',
+  game: 'flag',
+  yardageBook: 'book-open',
   profile: 'user',
   settings: 'settings',
   location: 'map-pin',
