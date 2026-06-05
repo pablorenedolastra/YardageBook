@@ -1,26 +1,15 @@
 import { Feather } from '@expo/vector-icons';
+import type { ComponentProps } from 'react';
+import { Tabs } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../theme';
 
 /**
- * Props mínimas que expo-router Tabs pasa a la `tabBar`. Tipadas localmente
- * para no acoplar el componente a rutas internas de expo-router/react-navigation.
+ * Props que expo-router `Tabs` pasa a su render prop `tabBar`. Se derivan del
+ * propio componente `Tabs` para no acoplarse a rutas internas de react-navigation.
  */
-export interface TabBarProps {
-  state: {
-    index: number;
-    routes: { key: string; name: string }[];
-  };
-  navigation: {
-    navigate: (name: string) => void;
-    emit: (event: {
-      type: 'tabPress';
-      target: string;
-      canPreventDefault: boolean;
-    }) => { defaultPrevented: boolean };
-  };
-}
+export type TabBarProps = Parameters<NonNullable<ComponentProps<typeof Tabs>['tabBar']>>[0];
 
 /** Configuración visible de cada pestaña, en orden. */
 const TABS: { name: string; label: string; icon: keyof typeof Feather.glyphMap }[] = [

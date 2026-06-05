@@ -8,6 +8,8 @@ const METRICS = {
 };
 
 // Estado mínimo simulando las props que expo-router Tabs pasa a tabBar.
+// Doble de test mínimo: solo state + navigation, que es lo que TabBar consume.
+// Se castea al tipo completo que expo-router pasa en runtime.
 function makeProps(activeIndex: number): TabBarProps {
   return {
     state: {
@@ -22,7 +24,7 @@ function makeProps(activeIndex: number): TabBarProps {
       navigate: () => {},
       emit: () => ({ defaultPrevented: false }),
     },
-  };
+  } as unknown as TabBarProps;
 }
 
 function renderTabBar(activeIndex: number) {
