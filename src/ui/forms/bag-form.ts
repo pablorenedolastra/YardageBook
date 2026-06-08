@@ -102,6 +102,22 @@ export function isBagValid(bag: BagDraft): boolean {
   return Object.keys(entryErrors).length === 0 && validCount >= 1;
 }
 
+/** Construye un BagDraft editable a partir de una ClubMatrix guardada. */
+export function bagFromMatrix(matrix: ClubMatrix): BagDraft {
+  return {
+    month: matrix.measuredContext.month,
+    city: matrix.measuredContext.city,
+    entries: [...matrix.entries]
+      .sort((a, b) => a.order - b.order)
+      .map((e) => ({
+        clubId: e.clubId,
+        label: e.label,
+        distance: String(e.carryDistance),
+        order: e.order,
+      })),
+  };
+}
+
 /** Convierte la bolsa en una ClubMatrix (solo palos con distancia > 0, ordenados). */
 export function toClubMatrix(bag: BagDraft): ClubMatrix {
   const entries = bag.entries

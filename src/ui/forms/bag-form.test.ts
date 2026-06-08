@@ -7,8 +7,10 @@ import {
   validateBag,
   isBagValid,
   toClubMatrix,
+  bagFromMatrix,
 } from './bag-form';
 import { CLUB_CATALOG } from './clubs';
+import { ClubMatrix } from '../../domain';
 
 const driver = CLUB_CATALOG.find((c) => c.clubId === 'driver')!;
 const i7 = CLUB_CATALOG.find((c) => c.clubId === '7i')!;
@@ -68,6 +70,22 @@ describe('bag draft', () => {
     bag = addClubFromCatalog(bag, driver);
     bag = setEntryDistance(bag, 'driver', '-5');
     expect(isBagValid(bag)).toBe(false); // hay un error
+  });
+
+  it('bagFromMatrix reconstruye un draft editable y hace round-trip', () => {
+    const matrix: ClubMatrix = {
+      measuredContext: { month: 6, city: 'Madrid' },
+      entries: [
+        { clubId: 'driver', label: 'Driver', carryDistance: 230, order: 1 },
+        { clubId: '7i', label: 'Hierro 7', carryDistance: 150, order: 10 },
+      ],
+    };
+    const bag = bagFromMatrix(matrix);
+    expect(bag.month).toBe(6);
+    expect(bag.city).toBe('Madrid');
+    expect(bag.entries.map((e) => e.clubId)).toEqual(['driver', '7i']);
+    expect(bag.entries[1].distance).toBe('150');
+    expect(toClubMatrix(bag)).toEqual(matrix);
   });
 
   it('toClubMatrix filtra vacíos, parsea coma decimal y ordena', () => {
