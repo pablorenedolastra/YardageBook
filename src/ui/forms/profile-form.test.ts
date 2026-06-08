@@ -3,7 +3,9 @@ import {
   validateProfileForm,
   isProfileFormValid,
   toProfileDraft,
+  profileToFormValues,
 } from './profile-form';
+import { Profile } from '../../domain';
 
 const valid: ProfileFormValues = {
   firstName: 'Pablo',
@@ -51,6 +53,40 @@ describe('validateProfileForm', () => {
 
   it('rechaza hándicap no numérico', () => {
     expect(validateProfileForm({ ...valid, handicap: 'abc' }).handicap).toBeDefined();
+  });
+});
+
+describe('profileToFormValues', () => {
+  it('convierte un Profile en valores de formulario', () => {
+    const profile: Profile = {
+      id: 'p1',
+      firstName: 'Pablo',
+      lastName: 'Renedo',
+      email: 'pablo@example.com',
+      country: 'ES',
+      handicap: 12.4,
+      unit: 'yards',
+    };
+    expect(profileToFormValues(profile)).toEqual({
+      firstName: 'Pablo',
+      lastName: 'Renedo',
+      email: 'pablo@example.com',
+      country: 'ES',
+      handicap: '12.4',
+      unit: 'yards',
+    });
+  });
+
+  it('deja el hándicap vacío si no está definido', () => {
+    const profile: Profile = {
+      id: 'p1',
+      firstName: 'A',
+      lastName: 'B',
+      email: 'a@b.com',
+      country: 'ES',
+      unit: 'meters',
+    };
+    expect(profileToFormValues(profile).handicap).toBe('');
   });
 });
 
