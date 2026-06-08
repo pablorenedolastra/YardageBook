@@ -12,7 +12,7 @@ const profile: Profile = {
   unit: 'meters',
 };
 const matrix: ClubMatrix = {
-  baseline: { temperatureC: 20, humidityPct: 50 },
+  measuredContext: { month: 6, city: 'Madrid' },
   entries: [{ clubId: '7i', label: 'Hierro 7', carryDistance: 150, order: 1 }],
 };
 
