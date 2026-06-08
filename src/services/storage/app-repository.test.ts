@@ -2,7 +2,15 @@ import { AppRepository } from './app-repository';
 import { InMemoryStore } from './in-memory-store';
 import { Profile, ClubMatrix } from '../../domain';
 
-const profile: Profile = { id: 'p1', name: 'Pablo', unit: 'meters' };
+const profile: Profile = {
+  id: 'p1',
+  firstName: 'Pablo',
+  lastName: 'Renedo',
+  email: 'pablo@example.com',
+  country: 'ES',
+  handicap: 12.4,
+  unit: 'meters',
+};
 const matrix: ClubMatrix = {
   baseline: { temperatureC: 20, humidityPct: 50 },
   entries: [{ clubId: '7i', label: 'Hierro 7', carryDistance: 150, order: 1 }],
