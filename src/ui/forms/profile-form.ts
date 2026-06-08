@@ -1,4 +1,4 @@
-import { DistanceUnit, ProfileDraft } from '../../domain';
+import { DistanceUnit, Profile, ProfileDraft } from '../../domain';
 
 /** Valores en bruto del formulario de perfil (todo texto salvo la unidad). */
 export interface ProfileFormValues {
@@ -37,6 +37,18 @@ export function validateProfileForm(v: ProfileFormValues): ProfileFormErrors {
 /** ¿El formulario es válido (sin errores)? */
 export function isProfileFormValid(v: ProfileFormValues): boolean {
   return Object.keys(validateProfileForm(v)).length === 0;
+}
+
+/** Convierte un Profile guardado en valores de formulario (para editar). */
+export function profileToFormValues(p: Profile): ProfileFormValues {
+  return {
+    firstName: p.firstName,
+    lastName: p.lastName,
+    email: p.email,
+    country: p.country,
+    handicap: p.handicap !== undefined ? String(p.handicap) : '',
+    unit: p.unit,
+  };
 }
 
 /** Convierte los valores del formulario en un ProfileDraft normalizado. */
