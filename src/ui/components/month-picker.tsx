@@ -1,26 +1,7 @@
 import { useState } from 'react';
 import { FlatList, Modal, Pressable, Text, View } from 'react-native';
+import { MONTHS, monthName } from '../forms/months';
 import { theme } from '../theme';
-
-const MONTHS = [
-  'Enero',
-  'Febrero',
-  'Marzo',
-  'Abril',
-  'Mayo',
-  'Junio',
-  'Julio',
-  'Agosto',
-  'Septiembre',
-  'Octubre',
-  'Noviembre',
-  'Diciembre',
-];
-
-/** Nombre del mes (1-12). */
-export function monthName(month: number): string {
-  return MONTHS[month - 1] ?? '';
-}
 
 export interface MonthPickerProps {
   label: string;
