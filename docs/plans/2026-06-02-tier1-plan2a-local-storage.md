@@ -30,6 +30,7 @@ src/services/storage/
 ## Task 1: Puerto KeyValueStore + InMemoryStore (TDD)
 
 **Files:**
+
 - Create: `src/services/storage/key-value-store.ts`
 - Create: `src/services/storage/in-memory-store.ts`
 - Test: `src/services/storage/in-memory-store.test.ts`
@@ -37,14 +38,17 @@ src/services/storage/
 - [ ] **Step 1: Instalar AsyncStorage** (lo usa el adaptador de la Task 3; se instala ya para no fragmentar)
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx expo install @react-native-async-storage/async-storage
 ```
+
 Expected: añade la dependencia a `package.json` con la versión compatible con Expo SDK 56.
 
 - [ ] **Step 2: Escribir el test que falla**
 
 Create `src/services/storage/in-memory-store.test.ts`:
+
 ```ts
 import { InMemoryStore } from './in-memory-store';
 
@@ -72,14 +76,17 @@ describe('InMemoryStore', () => {
 - [ ] **Step 3: Ejecutar y verificar que falla**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/services/storage/in-memory-store.test.ts
 ```
+
 Expected: FAIL — "Cannot find module './in-memory-store'".
 
 - [ ] **Step 4: Implementar el puerto**
 
 Create `src/services/storage/key-value-store.ts`:
+
 ```ts
 /** Almacén clave-valor de bajo nivel. Puerto (interfaz) para persistencia. */
 export interface KeyValueStore {
@@ -92,6 +99,7 @@ export interface KeyValueStore {
 - [ ] **Step 5: Implementar InMemoryStore**
 
 Create `src/services/storage/in-memory-store.ts`:
+
 ```ts
 import { KeyValueStore } from './key-value-store';
 
@@ -116,9 +124,11 @@ export class InMemoryStore implements KeyValueStore {
 - [ ] **Step 6: Ejecutar y verificar que pasa**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/services/storage/in-memory-store.test.ts
 ```
+
 Expected: PASS, 3 tests.
 
 - [ ] **Step 7: Commit**
@@ -132,12 +142,14 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "feat
 ## Task 2: AppRepository (TDD contra InMemoryStore)
 
 **Files:**
+
 - Create: `src/services/storage/app-repository.ts`
 - Test: `src/services/storage/app-repository.test.ts`
 
 - [ ] **Step 1: Escribir el test que falla**
 
 Create `src/services/storage/app-repository.test.ts`:
+
 ```ts
 import { AppRepository } from './app-repository';
 import { InMemoryStore } from './in-memory-store';
@@ -177,14 +189,17 @@ describe('AppRepository', () => {
 - [ ] **Step 2: Ejecutar y verificar que falla**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/services/storage/app-repository.test.ts
 ```
+
 Expected: FAIL — "Cannot find module './app-repository'".
 
 - [ ] **Step 3: Implementar AppRepository**
 
 Create `src/services/storage/app-repository.ts`:
+
 ```ts
 import { Profile, ClubMatrix } from '../../domain';
 import { KeyValueStore } from './key-value-store';
@@ -222,9 +237,11 @@ export class AppRepository {
 - [ ] **Step 4: Ejecutar y verificar que pasa**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/services/storage/app-repository.test.ts
 ```
+
 Expected: PASS, 4 tests.
 
 - [ ] **Step 5: Commit**
@@ -240,12 +257,14 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && git add -A && git commit -m "feat
 `AsyncStorageStore` es un adaptador fino sobre AsyncStorage. No se testea con Jest unitario (requiere entorno nativo); su lógica es una delegación directa. Los tests cubren el comportamiento real vía `InMemoryStore`.
 
 **Files:**
+
 - Create: `src/services/storage/async-storage-store.ts`
 - Create: `src/services/storage/index.ts`
 
 - [ ] **Step 1: Implementar el adaptador**
 
 Create `src/services/storage/async-storage-store.ts`:
+
 ```ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyValueStore } from './key-value-store';
@@ -269,6 +288,7 @@ export class AsyncStorageStore implements KeyValueStore {
 - [ ] **Step 2: Crear el barrel**
 
 Create `src/services/storage/index.ts`:
+
 ```ts
 export * from './key-value-store';
 export * from './in-memory-store';
@@ -279,9 +299,11 @@ export * from './async-storage-store';
 - [ ] **Step 3: Verificación completa**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npm run typecheck && npm run lint && npm test
 ```
+
 Expected: typecheck exit 0; lint sin errores; Jest PASS con 17 tests (10 dominio + 3 InMemoryStore + 4 AppRepository).
 
 - [ ] **Step 4: Commit**

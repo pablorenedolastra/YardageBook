@@ -10,7 +10,7 @@
 
 > ⚠️ **Per `AGENTS.md`:** before implementing the font-loading and asset tasks, confirm the exact APIs against https://docs.expo.dev/versions/v56.0.0/ (especially `expo-font` `useFonts` and `expo-image`/`ImageBackground`). The code below targets the stable SDK 56 API.
 
-**Scope note:** This plan delivers the *foundation only*. The base components (`Button`, `NumberField`, `SegmentedControl`, `Card`, `RecommendationCard`, `TargetCard`, `MatrixRow`, `StatePill`, `TabBar`) are a **separate follow-up plan** that builds on these tokens.
+**Scope note:** This plan delivers the _foundation only_. The base components (`Button`, `NumberField`, `SegmentedControl`, `Card`, `RecommendationCard`, `TargetCard`, `MatrixRow`, `StatePill`, `TabBar`) are a **separate follow-up plan** that builds on these tokens.
 
 **Spec:** [docs/specs/2026-06-02-yardagebook-design-system.md](../specs/2026-06-02-yardagebook-design-system.md)
 
@@ -47,22 +47,27 @@ assets/paper-texture.png  ← tileable grain (Task 11)
 ### Task 1: Install dependencies
 
 **Files:**
+
 - Modify: `package.json` (via installer)
 
 - [ ] **Step 1: Install runtime deps with the Expo installer (SDK-matched versions)**
 
 Run:
+
 ```bash
 npx expo install expo-font @expo-google-fonts/space-grotesk @expo-google-fonts/inter
 ```
+
 Expected: `package.json` gains `expo-font`, `@expo-google-fonts/space-grotesk`, `@expo-google-fonts/inter`. (`@expo/vector-icons` already ships with `expo` — do not add it separately.)
 
 - [ ] **Step 2: Install test deps (react-test-renderer must match React 19.2.3)**
 
 Run:
+
 ```bash
 npm install -D @testing-library/react-native react-test-renderer@19.2.3
 ```
+
 Expected: both appear under `devDependencies`.
 
 - [ ] **Step 3: Verify the toolchain still builds**
@@ -84,6 +89,7 @@ git commit -m "build(ui): add font + RN testing dependencies"
 A pure helper used later by the texture overlay and any translucent fills. Building it first gives us a TDD warm-up and a dependency-free util.
 
 **Files:**
+
 - Create: `src/ui/theme/color-utils.ts`
 - Test: `src/ui/theme/color-utils.test.ts`
 
@@ -153,6 +159,7 @@ git commit -m "feat(ui): add withOpacity color helper"
 ### Task 3: Color tokens
 
 **Files:**
+
 - Create: `src/ui/theme/colors.ts`
 - Test: `src/ui/theme/colors.test.ts`
 
@@ -238,6 +245,7 @@ git commit -m "feat(ui): add color tokens"
 Font family strings MUST match the keys registered by `useFonts` in Task 8 (e.g. `SpaceGrotesk_700Bold`). This is the contract that makes the loaded fonts actually apply.
 
 **Files:**
+
 - Create: `src/ui/theme/typography.ts`
 - Test: `src/ui/theme/typography.test.ts`
 
@@ -309,15 +317,35 @@ export const fontFamily = {
 
 /** Escala tipográfica. `satisfies` mantiene la inferencia literal y valida tipos. */
 export const textVariants = {
-  display: { fontFamily: fontFamily.display, fontSize: 40, letterSpacing: -0.5, fontVariant: ['tabular-nums'] },
-  clubName: { fontFamily: fontFamily.display, fontSize: 30, letterSpacing: -0.3, fontVariant: ['tabular-nums'] },
+  display: {
+    fontFamily: fontFamily.display,
+    fontSize: 40,
+    letterSpacing: -0.5,
+    fontVariant: ['tabular-nums'],
+  },
+  clubName: {
+    fontFamily: fontFamily.display,
+    fontSize: 30,
+    letterSpacing: -0.3,
+    fontVariant: ['tabular-nums'],
+  },
   titleApp: { fontFamily: fontFamily.heading, fontSize: 18 },
   sectionHead: { fontFamily: fontFamily.heading, fontSize: 13 },
   body: { fontFamily: fontFamily.body, fontSize: 15, lineHeight: 22 },
   bodyStrong: { fontFamily: fontFamily.bodySemibold, fontSize: 15, lineHeight: 22 },
   small: { fontFamily: fontFamily.body, fontSize: 13, lineHeight: 18 },
-  caption: { fontFamily: fontFamily.bodySemibold, fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase' },
-  labelAccent: { fontFamily: fontFamily.bodyBold, fontSize: 10, letterSpacing: 1.2, textTransform: 'uppercase' },
+  caption: {
+    fontFamily: fontFamily.bodySemibold,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  labelAccent: {
+    fontFamily: fontFamily.bodyBold,
+    fontSize: 10,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
 } satisfies Record<string, TextStyle>;
 
 export type TextVariant = keyof typeof textVariants;
@@ -340,6 +368,7 @@ git commit -m "feat(ui): add typography tokens"
 ### Task 5: Spacing, radius, and border tokens
 
 **Files:**
+
 - Create: `src/ui/theme/spacing.ts`
 - Test: `src/ui/theme/spacing.test.ts`
 
@@ -423,6 +452,7 @@ git commit -m "feat(ui): add spacing, radius and border tokens"
 A typed map of the Feather icon names used across the app, so screens reference `icons.shot` instead of stringly-typed names.
 
 **Files:**
+
 - Create: `src/ui/theme/icons.ts`
 - Test: `src/ui/theme/icons.test.ts`
 
@@ -492,6 +522,7 @@ git commit -m "feat(ui): add icon name map"
 ### Task 7: Aggregated theme barrel
 
 **Files:**
+
 - Create: `src/ui/theme/index.ts`
 - Test: `src/ui/theme/index.test.ts`
 
@@ -571,6 +602,7 @@ git commit -m "feat(ui): add aggregated theme barrel"
 Wraps `expo-font`'s `useFonts` with exactly the six faces the typography tokens reference. The test mocks `expo-font` so it runs without native modules.
 
 **Files:**
+
 - Create: `src/ui/theme/use-app-fonts.ts`
 - Test: `src/ui/theme/use-app-fonts.test.ts`
 
@@ -657,6 +689,7 @@ git commit -m "feat(ui): add useAppFonts hook"
 The canvas every screen sits on. This task paints the solid paper color; the subtle grain overlay is added in Task 11.
 
 **Files:**
+
 - Create: `src/ui/components/app-background.tsx`
 - Test: `src/ui/components/app-background.test.tsx`
 
@@ -747,6 +780,7 @@ git commit -m "feat(ui): add AppBackground paper canvas"
 Replace the Expo starter `App.tsx` with one that loads fonts and renders a proof screen using the tokens directly (raw `Text`, since base components are a later plan). This is the on-device proof that the system renders.
 
 **Files:**
+
 - Modify: `App.tsx` (full replace)
 
 - [ ] **Step 1: Replace `App.tsx`**
@@ -778,9 +812,7 @@ export default function App() {
           <Text style={[theme.textVariants.clubName, styles.ink]}>Hierro 7</Text>
         </View>
 
-        <Text style={[theme.textVariants.small, styles.muted]}>
-          Carry ajustado hoy: 145 m
-        </Text>
+        <Text style={[theme.textVariants.small, styles.muted]}>Carry ajustado hoy: 145 m</Text>
       </View>
     </AppBackground>
   );
@@ -836,6 +868,7 @@ git commit -m "feat(ui): load fonts and render theme proof screen"
 Add the recycled-paper grain as a low-opacity tiled overlay in `AppBackground`. The grain is a small tileable PNG.
 
 **Files:**
+
 - Create: `assets/paper-texture.png`
 - Modify: `src/ui/components/app-background.tsx`
 - Modify: `src/ui/components/app-background.test.tsx`
@@ -843,12 +876,14 @@ Add the recycled-paper grain as a low-opacity tiled overlay in `AppBackground`. 
 - [ ] **Step 1: Generate a tileable grain PNG**
 
 Run (macOS — install ImageMagick first if needed: `brew install imagemagick`):
+
 ```bash
 magick -size 160x160 xc:transparent \
   -seed 7 +noise Random -channel A -evaluate multiply 0.10 +channel \
   -fill '#5C4022' -colorize 100 \
   "assets/paper-texture.png"
 ```
+
 Expected: a 160×160 PNG of faint brown specks on transparency at `assets/paper-texture.png`.
 
 > If ImageMagick is unavailable, substitute any seamless 160×160 brown-grain PNG with transparency. The exact texture is cosmetic; what matters is that it tiles and is faint.
@@ -858,18 +893,18 @@ Expected: a 160×160 PNG of faint brown specks on transparency at `assets/paper-
 Add this test inside the existing `describe('AppBackground', ...)` block in `src/ui/components/app-background.test.tsx`:
 
 ```tsx
-  it('renderiza la capa de textura de papel por encima del fondo', () => {
-    render(
-      <AppBackground>
-        <Text>x</Text>
-      </AppBackground>,
-    );
-    const texture = screen.getByTestId('paper-texture');
-    const flat = Array.isArray(texture.props.style)
-      ? Object.assign({}, ...texture.props.style)
-      : texture.props.style;
-    expect(flat.opacity).toBeCloseTo(0.09, 2);
-  });
+it('renderiza la capa de textura de papel por encima del fondo', () => {
+  render(
+    <AppBackground>
+      <Text>x</Text>
+    </AppBackground>,
+  );
+  const texture = screen.getByTestId('paper-texture');
+  const flat = Array.isArray(texture.props.style)
+    ? Object.assign({}, ...texture.props.style)
+    : texture.props.style;
+  expect(flat.opacity).toBeCloseTo(0.09, 2);
+});
 ```
 
 - [ ] **Step 3: Run test to verify it fails**
@@ -944,6 +979,7 @@ git commit -m "feat(ui): add subtle paper-grain texture to AppBackground"
 ## Self-Review
 
 **Spec coverage:**
+
 - §3 Color tokens → Task 3 ✓
 - §4 Typography (families + scale, tabular-nums, uppercase) → Tasks 4 + 8 ✓
 - §5 Spacing/radius/border → Task 5 ✓

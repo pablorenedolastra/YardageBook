@@ -11,9 +11,7 @@ describe('PrimaryButton', () => {
 
   it('no llama a onPress cuando está deshabilitado', () => {
     const onPress = jest.fn();
-    const { getByText } = render(
-      <PrimaryButton title="Continuar" onPress={onPress} disabled />,
-    );
+    const { getByText } = render(<PrimaryButton title="Continuar" onPress={onPress} disabled />);
     fireEvent.press(getByText('Continuar'));
     expect(onPress).not.toHaveBeenCalled();
   });

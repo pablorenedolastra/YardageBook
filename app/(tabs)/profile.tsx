@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { DistanceUnit, Profile } from '../../src/domain';
 import { createAppRepository } from '../../src/services/storage';
+import { AppBackground } from '../../src/ui/components/app-background';
 import { PrimaryButton } from '../../src/ui/components/primary-button';
 import { ProfileForm } from '../../src/ui/components/profile-form';
 import { SecondaryButton } from '../../src/ui/components/secondary-button';
@@ -81,100 +82,112 @@ export default function ProfileTab() {
   };
 
   if (loading) {
-    return <View style={{ flex: 1 }} />;
+    return (
+      <AppBackground>
+        <View style={{ flex: 1 }} />
+      </AppBackground>
+    );
   }
 
   if (!profile) {
     return (
-      <ScrollView contentContainerStyle={{ padding: theme.spacing.xl }}>
-        <Text style={[theme.textVariants.body, { color: theme.colors.muted }]}>
-          No hay perfil guardado.
-        </Text>
-      </ScrollView>
+      <AppBackground>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: theme.spacing.xl }}>
+          <Text style={[theme.textVariants.body, { color: theme.colors.muted }]}>
+            No hay perfil guardado.
+          </Text>
+        </ScrollView>
+      </AppBackground>
     );
   }
 
   if (editing) {
     return (
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
-      >
-        <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>
-          Editar perfil
-        </Text>
-        <ProfileForm
-          initialValues={profileToFormValues(profile)}
-          submitLabel="Guardar"
-          onSubmit={saveEdit}
-        />
-        <SecondaryButton title="Cancelar" onPress={() => setEditing(false)} />
-      </ScrollView>
+      <AppBackground>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentInsetAdjustmentBehavior="automatic"
+          contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
+        >
+          <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>
+            Editar perfil
+          </Text>
+          <ProfileForm
+            initialValues={profileToFormValues(profile)}
+            submitLabel="Guardar"
+            onSubmit={saveEdit}
+          />
+          <SecondaryButton title="Cancelar" onPress={() => setEditing(false)} />
+        </ScrollView>
+      </AppBackground>
     );
   }
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
-    >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.lg }}>
-        <View
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: 28,
-            borderWidth: theme.border.hairline,
-            borderColor: theme.colors.accent,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text style={[theme.textVariants.titleApp, { color: theme.colors.accent }]}>
-            {initials(profile)}
-          </Text>
-        </View>
-        <View style={{ flex: 1, gap: 2 }}>
-          <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>
-            {profile.firstName} {profile.lastName}
-          </Text>
-          <Text style={[theme.textVariants.small, { color: theme.colors.muted }]}>
-            {profile.email}
-          </Text>
-        </View>
-        {profile.handicap !== undefined ? (
+    <AppBackground>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.lg }}>
           <View
             style={{
+              width: 56,
+              height: 56,
+              borderRadius: 28,
               borderWidth: theme.border.hairline,
               borderColor: theme.colors.accent,
-              borderRadius: theme.radius.pill,
-              paddingHorizontal: theme.spacing.sm,
-              paddingVertical: theme.spacing.xs,
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <Text style={[theme.textVariants.caption, { color: theme.colors.accent }]}>
-              HCP {profile.handicap}
+            <Text style={[theme.textVariants.titleApp, { color: theme.colors.accent }]}>
+              {initials(profile)}
             </Text>
           </View>
-        ) : null}
-      </View>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>
+              {profile.firstName} {profile.lastName}
+            </Text>
+            <Text style={[theme.textVariants.small, { color: theme.colors.muted }]}>
+              {profile.email}
+            </Text>
+          </View>
+          {profile.handicap !== undefined ? (
+            <View
+              style={{
+                borderWidth: theme.border.hairline,
+                borderColor: theme.colors.accent,
+                borderRadius: theme.radius.pill,
+                paddingHorizontal: theme.spacing.sm,
+                paddingVertical: theme.spacing.xs,
+              }}
+            >
+              <Text style={[theme.textVariants.caption, { color: theme.colors.accent }]}>
+                HCP {profile.handicap}
+              </Text>
+            </View>
+          ) : null}
+        </View>
 
-      <View>
-        <Row label="Nombre" value={profile.firstName} />
-        <Row label="Apellidos" value={profile.lastName} />
-        <Row label="País" value={countryName(profile.country)} />
-      </View>
+        <View>
+          <Row label="Nombre" value={profile.firstName} />
+          <Row label="Apellidos" value={profile.lastName} />
+          <Row label="País" value={countryName(profile.country)} />
+        </View>
 
-      <View style={{ gap: theme.spacing.xs }}>
-        <Text style={[theme.textVariants.caption, { color: theme.colors.muted }]}>Unidades</Text>
-        <SegmentedControl options={UNIT_OPTIONS} value={profile.unit} onChange={changeUnit} />
-      </View>
+        <View style={{ gap: theme.spacing.xs }}>
+          <Text style={[theme.textVariants.caption, { color: theme.colors.muted }]}>Unidades</Text>
+          <SegmentedControl options={UNIT_OPTIONS} value={profile.unit} onChange={changeUnit} />
+        </View>
 
-      <Text style={[theme.textVariants.small, { color: theme.colors.muted }]}>
-        Tus datos se guardan solo en este móvil. Sin cuenta ni nube.
-      </Text>
+        <Text style={[theme.textVariants.small, { color: theme.colors.muted }]}>
+          Tus datos se guardan solo en este móvil. Sin cuenta ni nube.
+        </Text>
 
-      <PrimaryButton title="Editar perfil" onPress={() => setEditing(true)} />
-    </ScrollView>
+        <PrimaryButton title="Editar perfil" onPress={() => setEditing(true)} />
+      </ScrollView>
+    </AppBackground>
   );
 }

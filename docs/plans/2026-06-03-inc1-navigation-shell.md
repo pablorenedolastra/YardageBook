@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development / executing-plans. Steps use checkbox (`- [ ]`) syntax.
 
-**Goal:** Convertir la app a **expo-router** con 3 pestañas (Juego, Yardage Book, Perfil) usando una `TabBar` a medida (sistema de diseño papel/oliva), y un *gating* de onboarding: si no hay perfil guardado se va a Onboarding; si lo hay, a las pestañas. Pantallas placeholder, visible en preview web.
+**Goal:** Convertir la app a **expo-router** con 3 pestañas (Juego, Yardage Book, Perfil) usando una `TabBar` a medida (sistema de diseño papel/oliva), y un _gating_ de onboarding: si no hay perfil guardado se va a Onboarding; si lo hay, a las pestañas. Pantallas placeholder, visible en preview web.
 
 **Architecture:** Routing por archivos con `expo-router`. La raíz `app/_layout.tsx` carga fuentes y envuelve todo en `AppBackground`. `app/index.tsx` decide la ruta inicial leyendo `AppRepository.loadProfile()`. Las pestañas usan `Tabs` de expo-router con `tabBar` personalizada (no tabs nativas, para honrar el diseño y funcionar en web). Iconos Feather (`@expo/vector-icons`), tokens del tema, cero literales.
 
@@ -44,14 +44,17 @@ src/services/storage/index.ts              ← + createAppRepository()
 - [ ] **Step 1: Instalar expo-router y peers**
 
 Run:
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants
 ```
+
 Expected: añade las dependencias con versiones compatibles con SDK 56.
 
 - [ ] **Step 2: Cambiar el entry en `package.json`**
 
 Cambia `"main": "index.ts"` por:
+
 ```json
 "main": "expo-router/entry"
 ```
@@ -59,6 +62,7 @@ Cambia `"main": "index.ts"` por:
 - [ ] **Step 3: Configurar `app.json`** (añadir `expo-router` a plugins y un `scheme`)
 
 `plugins` pasa a `["expo-font", "expo-router"]` y se añade `"scheme": "yardagebook"` dentro de `"expo"`:
+
 ```json
 "scheme": "yardagebook",
 "plugins": ["expo-font", "expo-router"]
@@ -71,6 +75,7 @@ cd "/Users/parenedo/Claude PRL/YardageBook" && rm index.ts App.tsx
 ```
 
 - [ ] **Step 5: Commit** (aún no arranca; se completa en Task 4)
+
 ```bash
 git add -A && git commit -m "build(nav): install expo-router and switch entry point"
 ```
@@ -84,6 +89,7 @@ git add -A && git commit -m "build(nav): install expo-router and switch entry po
 - [ ] **Step 1: Añadir iconos de pestañas a `src/ui/theme/icons.ts`**
 
 Dentro del objeto `icons`, añade (Feather válidos):
+
 ```ts
   game: 'flag',
   yardageBook: 'book-open',
@@ -105,10 +111,13 @@ function makeProps(activeIndex: number) {
   return {
     state: { index: activeIndex, routes },
     navigation: { navigate: () => {}, emit: () => ({ defaultPrevented: false }) },
-    descriptors: routes.reduce((acc, r) => {
-      acc[r.key] = { options: {} };
-      return acc;
-    }, {} as Record<string, { options: object }>),
+    descriptors: routes.reduce(
+      (acc, r) => {
+        acc[r.key] = { options: {} };
+        return acc;
+      },
+      {} as Record<string, { options: object }>,
+    ),
   } as never;
 }
 
@@ -123,9 +132,11 @@ describe('TabBar', () => {
 ```
 
 - [ ] **Step 3: Ejecutar y ver que falla**
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/ui/components/tab-bar.test.tsx
 ```
+
 Expected: FAIL — "Cannot find module './tab-bar'".
 
 - [ ] **Step 4: Implementar `src/ui/components/tab-bar.tsx`**
@@ -163,7 +174,11 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
         const color = isActive ? theme.colors.accent : theme.colors.ink;
         const route = state.routes[index];
         const onPress = () => {
-          const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+          const event = navigation.emit({
+            type: 'tabPress',
+            target: route.key,
+            canPreventDefault: true,
+          });
           if (!isActive && !event.defaultPrevented) {
             navigation.navigate(route.name);
           }
@@ -185,12 +200,15 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
 ```
 
 - [ ] **Step 5: Ejecutar y ver que pasa**
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx jest src/ui/components/tab-bar.test.tsx
 ```
+
 Expected: PASS, 1 test.
 
 - [ ] **Step 6: Commit**
+
 ```bash
 git add -A && git commit -m "feat(nav): add custom TabBar component"
 ```
@@ -204,6 +222,7 @@ git add -A && git commit -m "feat(nav): add custom TabBar component"
 - [ ] **Step 1: Añadir factory a `src/services/storage/index.ts`**
 
 Al final del barrel, añade:
+
 ```ts
 import { AppRepository } from './app-repository';
 import { AsyncStorageStore } from './async-storage-store';
@@ -223,10 +242,22 @@ import { theme } from '../theme';
 /** Placeholder de pantalla mientras se construye el contenido real. */
 export function ScreenPlaceholder({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: theme.spacing.xl, gap: theme.spacing.sm }}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: theme.spacing.xl,
+        gap: theme.spacing.sm,
+      }}
+    >
       <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>{title}</Text>
       {subtitle ? (
-        <Text style={[theme.textVariants.small, { color: theme.colors.muted, textAlign: 'center' }]}>{subtitle}</Text>
+        <Text
+          style={[theme.textVariants.small, { color: theme.colors.muted, textAlign: 'center' }]}
+        >
+          {subtitle}
+        </Text>
       ) : null}
     </View>
   );
@@ -234,12 +265,15 @@ export function ScreenPlaceholder({ title, subtitle }: { title: string; subtitle
 ```
 
 - [ ] **Step 3: Verificar typecheck**
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npm run typecheck
 ```
+
 Expected: exit 0.
 
 - [ ] **Step 4: Commit**
+
 ```bash
 git add -A && git commit -m "feat(nav): add app repository factory and screen placeholder"
 ```
@@ -341,24 +375,34 @@ export default function TabsLayout() {
 - [ ] **Step 5: Las tres pantallas placeholder**
 
 `app/(tabs)/index.tsx`:
+
 ```tsx
 import { ScreenPlaceholder } from '../../src/ui/components/screen-placeholder';
 
 export default function GameTab() {
-  return <ScreenPlaceholder title="Juego" subtitle="Selección de campo y mapa del hoyo (próximos incrementos)." />;
+  return (
+    <ScreenPlaceholder
+      title="Juego"
+      subtitle="Selección de campo y mapa del hoyo (próximos incrementos)."
+    />
+  );
 }
 ```
 
 `app/(tabs)/yardage-book.tsx`:
+
 ```tsx
 import { ScreenPlaceholder } from '../../src/ui/components/screen-placeholder';
 
 export default function YardageBookTab() {
-  return <ScreenPlaceholder title="Yardage Book" subtitle="Tu bolsa de palos (próximo incremento)." />;
+  return (
+    <ScreenPlaceholder title="Yardage Book" subtitle="Tu bolsa de palos (próximo incremento)." />
+  );
 }
 ```
 
 `app/(tabs)/profile.tsx`:
+
 ```tsx
 import { ScreenPlaceholder } from '../../src/ui/components/screen-placeholder';
 
@@ -368,6 +412,7 @@ export default function ProfileTab() {
 ```
 
 - [ ] **Step 6: Commit**
+
 ```bash
 git add -A && git commit -m "feat(nav): add expo-router routes (gate, tabs, placeholders)"
 ```
@@ -377,9 +422,11 @@ git add -A && git commit -m "feat(nav): add expo-router routes (gate, tabs, plac
 ## Task 5: Verificación final
 
 - [ ] **Step 1: typecheck + lint + tests**
+
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npm run typecheck && npm run lint && npm test
 ```
+
 Expected: typecheck exit 0; lint sin errores; Jest PASS (40 tests: los 39 previos + 1 de TabBar).
 
 - [ ] **Step 2: Arranque web (humo)** — confirma que el bundler compila la app router sin errores
@@ -387,6 +434,7 @@ Expected: typecheck exit 0; lint sin errores; Jest PASS (40 tests: los 39 previo
 ```bash
 cd "/Users/parenedo/Claude PRL/YardageBook" && npx expo export --platform web 2>&1 | tail -20
 ```
+
 Expected: "Exported" sin errores de bundling (valida que las rutas y dependencias resuelven). Borra la salida si se genera: `rm -rf dist`.
 
 - [ ] **Step 3: Commit (si Step 2 generó algún ajuste)** y fin.

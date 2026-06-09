@@ -163,9 +163,7 @@ function transform(elements, fallbackName) {
   const courseName = courseEl?.tags?.name ?? fallbackName ?? 'Campo sin nombre';
 
   // Centroides de greens precalculados.
-  const greenCentroids = greens
-    .map((g) => ({ el: g, c: centroidOf(g) }))
-    .filter((g) => g.c);
+  const greenCentroids = greens.map((g) => ({ el: g, c: centroidOf(g) })).filter((g) => g.c);
 
   const holes = holeWays.map(({ el, ref }) => {
     const start = el.geometry[0];
@@ -203,9 +201,7 @@ function transform(elements, fallbackName) {
       strokeIndex: el.tags.handicap ? parseInt(el.tags.handicap, 10) : undefined,
       green: {
         center: pinSide.green ? pinSide.green.c : null,
-        polygon: greenPolygon
-          ? greenPolygon.map((p) => ({ lat: p.lat, lng: p.lon }))
-          : undefined,
+        polygon: greenPolygon ? greenPolygon.map((p) => ({ lat: p.lat, lng: p.lon })) : undefined,
       },
       tees: teePoints,
       // línea de juego completa (para encuadrar el mapa y dibujar)
@@ -261,7 +257,9 @@ async function main() {
   const course = transform(elements, args.name);
 
   const withGreen = course.holes.filter((h) => h.green.center).length;
-  console.log(`  Campo: ${course.name} — ${course.holeCount} hoyos, ${withGreen} con centro de green.`);
+  console.log(
+    `  Campo: ${course.name} — ${course.holeCount} hoyos, ${withGreen} con centro de green.`,
+  );
 
   const json = JSON.stringify(course, null, 2);
   if (args.out) {

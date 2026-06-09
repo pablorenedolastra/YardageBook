@@ -1,6 +1,7 @@
 import { Redirect, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, Text } from 'react-native';
+import { AppBackground } from '../../src/ui/components/app-background';
 import { createAppRepository } from '../../src/services/storage';
 import { createId } from '../../src/services/id';
 import { BagEditor } from '../../src/ui/components/bag-editor';
@@ -35,23 +36,27 @@ export default function OnboardingBag() {
   };
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
-    >
-      <StepProgress step={2} total={2} />
-      <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>Tu bolsa</Text>
-      <Text style={[theme.textVariants.small, { color: theme.colors.muted }]}>
-        Añade tus palos y la distancia de carry de cada uno. Indica en qué mes y ciudad los mediste.
-      </Text>
+    <AppBackground>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
+      >
+        <StepProgress step={2} total={2} />
+        <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>Tu bolsa</Text>
+        <Text style={[theme.textVariants.small, { color: theme.colors.muted }]}>
+          Añade tus palos y la distancia de carry de cada uno. Indica en qué mes y ciudad los
+          mediste.
+        </Text>
 
-      <BagEditor value={bag} onChange={setBag} />
+        <BagEditor value={bag} onChange={setBag} />
 
-      <PrimaryButton
-        title={saving ? 'Guardando…' : 'Empezar a jugar'}
-        onPress={onStart}
-        disabled={!isBagValid(bag) || saving}
-      />
-    </ScrollView>
+        <PrimaryButton
+          title={saving ? 'Guardando…' : 'Empezar a jugar'}
+          onPress={onStart}
+          disabled={!isBagValid(bag) || saving}
+        />
+      </ScrollView>
+    </AppBackground>
   );
 }

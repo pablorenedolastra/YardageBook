@@ -3,7 +3,17 @@ import { icons } from './icons';
 describe('icons', () => {
   it('define el set mínimo de v1', () => {
     expect(Object.keys(icons).sort()).toEqual(
-      ['shot', 'clubs', 'game', 'yardageBook', 'profile', 'settings', 'location', 'increase', 'decrease'].sort(),
+      [
+        'shot',
+        'clubs',
+        'game',
+        'yardageBook',
+        'profile',
+        'settings',
+        'location',
+        'increase',
+        'decrease',
+      ].sort(),
     );
   });
 

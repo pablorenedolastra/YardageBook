@@ -22,13 +22,13 @@ táctil y palo recomendado en tiempo real). Toda la UI usa el [sistema de diseñ
 Este spec **revisa** decisiones del [diseño de producto v1](./2026-06-02-yardagebook-design.md).
 Donde difieran, manda este documento:
 
-| Tema | Original | Ahora (este spec) |
-| --- | --- | --- |
-| Datos de campos | "Cero base de datos de campos" | **BD de campos externa** (proveedor). Diseñamos asumiéndola; conseguir los datos queda fuera del diseño. |
-| Interacción principal | Entrada manual de distancia + recomendación | **Mapa del hoyo + GPS**: marcar objetivo, metros en la línea, palo recomendado. |
-| Perfil | nombre + unidad | **nombre, apellidos, email, país, handicap, unidad** (local, sin cuenta/nube). |
-| Baseline de la matriz | temperatura + humedad | **mes + ciudad** donde se midió (metadato) + toggle **"Plays Like"**. |
-| Onboarding | crear perfil + matriz manual | **2 pasos**: perfil → bolsa, con menú de preselección de palos. |
+| Tema                  | Original                                    | Ahora (este spec)                                                                                        |
+| --------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Datos de campos       | "Cero base de datos de campos"              | **BD de campos externa** (proveedor). Diseñamos asumiéndola; conseguir los datos queda fuera del diseño. |
+| Interacción principal | Entrada manual de distancia + recomendación | **Mapa del hoyo + GPS**: marcar objetivo, metros en la línea, palo recomendado.                          |
+| Perfil                | nombre + unidad                             | **nombre, apellidos, email, país, handicap, unidad** (local, sin cuenta/nube).                           |
+| Baseline de la matriz | temperatura + humedad                       | **mes + ciudad** donde se midió (metadato) + toggle **"Plays Like"**.                                    |
+| Onboarding            | crear perfil + matriz manual                | **2 pasos**: perfil → bolsa, con menú de preselección de palos.                                          |
 
 **Impacto en el dominio ya construido** (`src/domain`): los modelos `Profile` y
 `ClubMatrix` cambian (ver §7). El motor `recommendClub` se mantiene, pero su ajuste
@@ -48,7 +48,7 @@ de meteo/inclinación pasa a estar **gobernado por el toggle "Plays Like"** (§6
   a concretar en el plan; puede derivar normales climáticas de mes+ciudad).
 - **Dependencias nativas:** el flujo de Juego usa GPS (`expo-location`) y mapas
   (`react-native-maps`), que **no funcionan en Expo Go ni en web** → requieren un
-  *development build*. Onboarding, Yardage Book y Perfil sí se ven en preview web.
+  _development build_. Onboarding, Yardage Book y Perfil sí se ven en preview web.
 
 ---
 
@@ -80,6 +80,7 @@ Cada pantalla vive en `src/ui/screens/` y se compone de componentes de
 `src/ui/components/`. Todas consumen tokens del tema (cero literales).
 
 ### 5.1 Onboarding · Paso 1 — Perfil
+
 - Indicador de progreso (2 pasos), título "Tu perfil".
 - Campos: **Nombre**, **Apellidos**, **Email**, **País** (selector), **Handicap**
   (numérico decimal), **Unidades** (segmentado metros/yardas).
@@ -87,12 +88,14 @@ Cada pantalla vive en `src/ui/screens/` y se compone de componentes de
   sean válidos: nombre, apellidos, email con formato, país).
 
 ### 5.2 Onboarding · Paso 2 — Tu bolsa
+
 - Indicador de progreso, título "Tu bolsa", texto guía.
 - **`BagEditor`** (componente compartido, ver §5.4) **vacío** al inicio.
 - Botón primario **"Empezar a jugar"** (habilitado con ≥1 palo con distancia válida).
 - Al confirmar: persiste `Profile` + `ClubMatrix` y navega a las pestañas (Juego).
 
 ### 5.3 Yardage Book (pestaña)
+
 - **Modo ver:** cabecera "Yardage Book", contexto "Medido en {mes} · {ciudad}",
   lista de palos (nombre + carry en la unidad del perfil), solo lectura. Un único
   botón inferior **"Editar bolsa"**.
@@ -100,7 +103,9 @@ Cada pantalla vive en `src/ui/screens/` y se compone de componentes de
   **"Guardar bolsa"**. "Cancelar" descarta cambios (vuelve a modo ver).
 
 ### 5.4 Componente compartido `BagEditor`
+
 Mismo bloque en onboarding y en Yardage Book (consistencia + reutilización):
+
 - Lista de palos; cada fila: etiqueta del palo + **campo de distancia editable**
   (Space Grotesk, sufijo de unidad) + **✕** (color `danger`) para quitar.
 - **"+ Añadir palo"** → abre `ClubPickerSheet`.
@@ -109,6 +114,7 @@ Mismo bloque en onboarding y en Yardage Book (consistencia + reutilización):
 - Reglas: distancias > 0; no duplicar `clubId`; orden estable (driver→wedges).
 
 ### 5.5 Componente `ClubPickerSheet`
+
 - Hoja inferior (bottom sheet) con catálogo de palos precargado, agrupado:
   **Maderas** (Driver, Madera 3, Madera 5), **Híbridos** (3/4/5),
   **Hierros** (4–9), **Wedges** (PW, GW, SW, LW).
@@ -116,6 +122,7 @@ Mismo bloque en onboarding y en Yardage Book (consistencia + reutilización):
 - Acceso a **"+ Palo personalizado"** desde la misma hoja.
 
 ### 5.6 Perfil (pestaña)
+
 - Cabecera: iniciales en círculo + nombre completo + email + badge **HCP**.
 - Filas: Nombre, Apellidos, País.
 - **Unidades** (segmentado m/yd) — editable, afecta a toda la app.
@@ -123,13 +130,16 @@ Mismo bloque en onboarding y en Yardage Book (consistencia + reutilización):
 - Botón **"Editar perfil"** (formulario equivalente al del onboarding paso 1).
 
 ### 5.7 Juego · Selección de campo
+
 - Título "Juego", buscador con **autocomplete** sobre la BD de campos externa
   (resultado: nombre del campo + ubicación + nº de hoyos).
 - Sección **"Recientes"** (campos jugados, desde almacenamiento local).
 - Al elegir campo → navega directamente al **Hoyo 1**.
 
 ### 5.8 Juego · Hoyo (pantalla estrella)
+
 Mapa aéreo a pantalla completa con chrome superpuesto (paneles papel/oliva):
+
 - **Mapa satélite** del hoyo (`react-native-maps`, tipo `satellite`), encuadrado al
   hoyo con los datos del campo (tee/green del proveedor).
 - **Marcador de posición GPS**: círculo (papel, borde+halo oliva) con la **inicial
@@ -188,11 +198,11 @@ ClubMatrix
 
 ## 8. Servicios nuevos (capa `src/services`)
 
-| Servicio | Propósito | Nota |
-| --- | --- | --- |
-| `location` | Posición GPS del jugador (`expo-location`) | Requiere permisos + dev build |
-| `courses` | Buscar campos y leer geometría de hoyos (proveedor externo) | Interfaz desacoplada; el proveedor concreto se decide en el plan. Mock inicial posible. |
-| `weather` | Meteo para Plays Like ON | Ya previsto en diseño original (Open-Meteo) |
+| Servicio   | Propósito                                                   | Nota                                                                                    |
+| ---------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `location` | Posición GPS del jugador (`expo-location`)                  | Requiere permisos + dev build                                                           |
+| `courses`  | Buscar campos y leer geometría de hoyos (proveedor externo) | Interfaz desacoplada; el proveedor concreto se decide en el plan. Mock inicial posible. |
+| `weather`  | Meteo para Plays Like ON                                    | Ya previsto en diseño original (Open-Meteo)                                             |
 
 `domain/` sigue sin importar de `services/` ni de `ui/` (regla de oro del diseño original).
 

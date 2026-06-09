@@ -25,14 +25,15 @@ Constante `CLUB_CATALOG: { clubId, label, group, order }[]` con grupos del spec 
 ## Task 3: Lógica de bolsa pura (TDD) — `src/ui/forms/bag-form.ts`
 
 Tipos `BagEntryDraft { clubId, label, distance: string, order }`, `BagDraft { entries, month, city }`. Funciones puras:
+
 - `emptyBag(month, city?)`, `addClubToBag`, `addCustomToBag`, `removeFromBag(clubId)`, `setDistance(clubId, text)`, `sortByCatalogOrder`.
 - `validateBag(draft)` → ok si ≥1 entrada con distancia > 0; sin clubId duplicado; distancias numéricas > 0.
 - `isBagValid(draft)`, `toClubMatrix(draft)` (parsea distancias coma/punto, ordena, construye `ClubMatrix`).
-Tests exhaustivos. Commit `feat(forms): add bag draft logic`.
+  Tests exhaustivos. Commit `feat(forms): add bag draft logic`.
 
 ## Task 4: Componentes — MonthPicker, ClubPickerSheet, BagEditor
 
-- `MonthPicker`: modal con los 12 meses (es). 
+- `MonthPicker`: modal con los 12 meses (es).
 - `ClubPickerSheet`: modal inferior con catálogo agrupado; `+` para añadir; añadidos muestran "Añadido ✓"; acceso a "+ Palo personalizado".
 - `BagEditor` (controlado por `BagDraft` + onChange): filas editables (label + `NumberField` distancia + ✕), "+ Añadir palo", "+ Personalizado", selector de mes + ciudad. Tests de humo. Commit `feat(ui): add BagEditor, ClubPickerSheet, MonthPicker`.
 
@@ -49,6 +50,7 @@ typecheck + lint + test + `expo export --platform web`. Commit final si procede.
 ---
 
 ## Definición de "hecho"
+
 - [ ] `ClubMatrix` con `measuredContext`; motor con meteo opcional; tests verdes.
 - [ ] Lógica de bolsa pura testeada.
 - [ ] Onboarding Paso 2 funcional: añadir/quitar palos, distancias, mes/ciudad; "Empezar a jugar" persiste y entra a pestañas.
@@ -56,5 +58,6 @@ typecheck + lint + test + `expo export --platform web`. Commit final si procede.
 - [ ] typecheck/lint/test verdes; export web sin errores.
 
 ## Fuera de alcance
+
 - Yardage Book ver/editar (Inc.4, reutiliza BagEditor).
 - Plays Like real / meteo en vivo (Inc.7).
