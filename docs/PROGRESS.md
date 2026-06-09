@@ -25,7 +25,9 @@ dispositivo. La meteo y los datos de campos son las únicas fuentes externas.
 
 ## 2. Stack y arquitectura
 
-- **Expo SDK 56 + TypeScript estricto.** Navegación con **expo-router**.
+- **Expo SDK 54 + TypeScript estricto.** Navegación con **expo-router**.
+  (Se bajó de 56→54 el 2026-06-09 para poder probar en Expo Go: los dispositivos del
+  usuario topan Expo Go en SDK 54. Ver `docs/plans/2026-06-09-sdk-54-downgrade.md`.)
 - **Tabs a medida** (no nativas): `Tabs` de expo-router con `tabBar` propio
   (`src/ui/components/tab-bar.tsx`), para honrar el sistema de diseño y funcionar
   en preview web.
@@ -103,8 +105,9 @@ Plan: [`docs/plans/2026-06-09-inc6-course-selection.md`](plans/2026-06-09-inc6-c
 ### Incremento 7 — hecho
 Plan: [`docs/plans/2026-06-09-inc7-hole-map.md`](plans/2026-06-09-inc7-hole-map.md).
 - **`react-native-maps`** (no `expo-maps`, que está en alpha) + **`expo-location`**.
-  En SDK 56 `react-native-maps` va en **Expo Go**; iOS usa **Apple Maps satélite sin
-  API key** (iPhone-first). Android (clave Google) queda fuera de este incremento.
+  En SDK 54 ambos van en **Expo Go**; en **Android** Expo Go aporta su clave de Google
+  Maps (el mapa se ve sin configurar). Para una build standalone de Android haría falta
+  clave propia; iOS usa Apple Maps sin clave.
 - Pantalla `app/game/[courseId].tsx`: mapa satélite, permiso + `watchPositionAsync`,
   tocar el mapa → objetivo, `haversineMeters` → `toUnitDistance` → `recommendClub`,
   navegación de hoyos, chip al centro del green, atribución ODbL.
@@ -189,8 +192,13 @@ node scripts/fetch-courses.mjs --name "Valderrama" --out assets/courses/valderra
   navegador (Cmd+Shift+R)**: la caché vieja deja la web en blanco.
 - **Mapa (Inc.7)**: `react-native-maps` **no** renderiza en web (hay
   `hole-map.web.tsx` de fallback para que el export no rompa). **Sí va en Expo Go
-  (SDK 56)** → la pantalla de Hoyo se prueba en **Expo Go iOS** (Apple Maps satélite,
-  sin API key), no en web. Android necesitaría clave Google Maps.
+  (SDK 54)** → la pantalla de Hoyo se prueba en **Expo Go (Android del usuario)**, no
+  en web. Para build standalone Android haría falta clave Google Maps propia.
+- **SDK 54, no 56**: el Expo Go de los dispositivos del usuario topa en 54. Si tocas
+  versiones, usa `npx expo install` (alinea a 54); algunas dev-deps (jest-expo,
+  eslint-config-expo, @types/react/jest, react-test-renderer) hay que fijarlas a mano.
+- **`StyleSheet.absoluteFill` no es spreadable** en los tipos de RN 0.81; para spread
+  usa `absoluteFillObject`.
 - **`jest.setup.js`** mockea `expo-font` (incl. `isLoaded`/`loadAsync` para
   `@expo/vector-icons`) y también **`react-native-maps`** y **`expo-location`** (para
   smoke tests). Si añades libs nativas que se usen en tests, amplía estos mocks.

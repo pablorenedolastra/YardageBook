@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.paper,
   },
   texture: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFillObject,
     opacity: 0.09,
     pointerEvents: 'none', // capa decorativa: nunca intercepta toques
   },
