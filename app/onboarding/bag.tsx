@@ -40,6 +40,8 @@ export default function OnboardingBag() {
       <ScrollView
         style={{ flex: 1 }}
         contentInsetAdjustmentBehavior="automatic"
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
       >
         <StepProgress step={2} total={2} />

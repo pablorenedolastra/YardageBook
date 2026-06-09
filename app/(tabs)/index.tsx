@@ -62,6 +62,7 @@ export default function GameTab() {
       <ScrollView
         style={{ flex: 1 }}
         contentInsetAdjustmentBehavior="automatic"
+        automaticallyAdjustKeyboardInsets
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
       >

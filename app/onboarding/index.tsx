@@ -30,6 +30,8 @@ export default function OnboardingProfile() {
       <ScrollView
         style={{ flex: 1 }}
         contentInsetAdjustmentBehavior="automatic"
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
       >
         <StepProgress step={1} total={2} />

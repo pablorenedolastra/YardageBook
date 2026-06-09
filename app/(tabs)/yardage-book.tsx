@@ -74,6 +74,8 @@ export default function YardageBookTab() {
         <ScrollView
           style={{ flex: 1 }}
           contentInsetAdjustmentBehavior="automatic"
+          automaticallyAdjustKeyboardInsets
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
         >
           <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>
