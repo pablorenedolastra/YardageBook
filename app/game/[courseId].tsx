@@ -94,6 +94,11 @@ export default function HoleScreen() {
   const currentRefIndex = clampHoleIndex(holeIndex, holes.length);
   const hole = holes[currentRefIndex - 1] ?? null;
 
+  // El objetivo arranca en el centro del green; al cambiar de hoyo, vuelve allí.
+  useEffect(() => {
+    if (hole) setTarget(hole.green.center);
+  }, [hole]);
+
   const unit = profile?.unit ?? 'meters';
   const unitL = unitLabel(unit);
   const playerInitial = profile?.firstName?.slice(0, 1) ?? '?';
@@ -116,14 +121,15 @@ export default function HoleScreen() {
     return toUnitDistance(haversineMeters(gps, hole.green.center), unit);
   }, [gps, hole, unit]);
 
-  const goPrev = () => {
-    setHoleIndex((i) => prevHole(i, holes.length));
-    setTarget(null);
-  };
-  const goNext = () => {
-    setHoleIndex((i) => nextHole(i, holes.length));
-    setTarget(null);
-  };
+  // Distancia del objetivo al centro del green (la 2ª línea de medición).
+  const toGreenDistance = useMemo(() => {
+    if (!target || !hole) return null;
+    return toUnitDistance(haversineMeters(target, hole.green.center), unit);
+  }, [target, hole, unit]);
+
+  // Al navegar, el efecto de arriba recoloca el objetivo en el green del nuevo hoyo.
+  const goPrev = () => setHoleIndex((i) => prevHole(i, holes.length));
+  const goNext = () => setHoleIndex((i) => nextHole(i, holes.length));
 
   const insets = useSafeAreaInsets();
 
@@ -180,8 +186,9 @@ export default function HoleScreen() {
         target={target}
         playerInitial={playerInitial}
         aimDistance={aimDistance}
+        toGreenDistance={toGreenDistance}
         unit={unitL}
-        onPressMap={setTarget}
+        onMoveTarget={setTarget}
       />
 
       {/* Chrome superior */}
@@ -219,7 +226,7 @@ export default function HoleScreen() {
           ) : (
             <View style={styles.hint}>
               <Text style={[theme.textVariants.small, { color: theme.colors.muted }]}>
-                Toca el mapa para colocar el objetivo.
+                Buscando tu posición GPS…
               </Text>
             </View>
           )

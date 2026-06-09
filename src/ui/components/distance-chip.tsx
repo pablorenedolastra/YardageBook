@@ -6,14 +6,16 @@ export interface DistanceChipProps {
   distance: number;
   /** Sufijo de unidad ('m' | 'yd'). */
   unit: string;
+  /** Color del chip: 'ink' (tiro GPS→objetivo) o 'accent' (objetivo→green). */
+  tone?: 'ink' | 'accent';
 }
 
-/** Chip oscuro con la distancia al objetivo, para superponer sobre la línea de tiro. */
-export function DistanceChip({ distance, unit }: DistanceChipProps) {
+/** Chip con la distancia de una línea de medición, para superponer en el mapa. */
+export function DistanceChip({ distance, unit, tone = 'ink' }: DistanceChipProps) {
   return (
     <View
       style={{
-        backgroundColor: theme.colors.ink,
+        backgroundColor: tone === 'accent' ? theme.colors.accent : theme.colors.ink,
         borderRadius: theme.radius.pill,
         borderCurve: 'continuous',
         paddingHorizontal: theme.spacing.sm,

@@ -10,32 +10,45 @@ import { TargetMarker } from './target-marker';
 export interface HoleMapProps {
   hole: Hole;
   gps: LatLng | null;
+  /** Objetivo movible. Por defecto el centro del green (lo fija la pantalla). */
   target: LatLng | null;
   playerInitial: string;
-  /** Distancia GPS→objetivo, ya en la unidad del perfil (para el chip sobre la línea). */
+  /** Distancia GPS→objetivo, ya en la unidad del perfil (chip sobre la línea de tiro). */
   aimDistance: number | null;
+  /** Distancia objetivo→centro del green, ya en la unidad del perfil. */
+  toGreenDistance: number | null;
   unit: string;
-  onPressMap: (p: LatLng) => void;
+  /** Recolocar el objetivo (tocar el mapa o arrastrar el marcador). */
+  onMoveTarget: (p: LatLng) => void;
 }
 
 /** Convierte el modelo de dominio {lat,lng} al {latitude,longitude} de react-native-maps. */
 const toRN = (p: LatLng): RNLatLng => ({ latitude: p.lat, longitude: p.lng });
 
-/** Mapa satélite del hoyo: green, línea de juego, GPS, objetivo y línea de tiro. */
+const midpoint = (a: LatLng, b: LatLng): LatLng => ({
+  lat: (a.lat + b.lat) / 2,
+  lng: (a.lng + b.lng) / 2,
+});
+
+const samePoint = (a: LatLng, b: LatLng): boolean => a.lat === b.lat && a.lng === b.lng;
+
+/** Mapa satélite del hoyo: green, línea de juego, GPS, objetivo movible y medidas. */
 export function HoleMap({
   hole,
   gps,
   target,
   playerInitial,
   aimDistance,
+  toGreenDistance,
   unit,
-  onPressMap,
+  onMoveTarget,
 }: HoleMapProps) {
   const mapRef = useRef<MapView>(null);
+  const green = hole.green.center;
 
   // Encuadrar el hoyo (tees + línea de juego + centro de green) al cargarlo.
   useEffect(() => {
-    const frame: LatLng[] = [...hole.tees, ...hole.playLine, hole.green.center];
+    const frame: LatLng[] = [...hole.tees, ...hole.playLine, green];
     if (frame.length === 0) return;
     const id = setTimeout(() => {
       mapRef.current?.fitToCoordinates(frame.map(toRN), {
@@ -44,10 +57,10 @@ export function HoleMap({
       });
     }, 300);
     return () => clearTimeout(id);
-  }, [hole]);
+  }, [hole, green]);
 
-  const midpoint =
-    gps && target ? { lat: (gps.lat + target.lat) / 2, lng: (gps.lng + target.lng) / 2 } : null;
+  // El objetivo→green solo se dibuja cuando el objetivo se ha movido del centro.
+  const movedFromGreen = target != null && !samePoint(target, green);
 
   return (
     <MapView
@@ -55,14 +68,14 @@ export function HoleMap({
       style={StyleSheet.absoluteFill}
       mapType="satellite"
       initialRegion={{
-        latitude: hole.green.center.lat,
-        longitude: hole.green.center.lng,
+        latitude: green.lat,
+        longitude: green.lng,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
       }}
       onPress={(e) => {
         const c = e.nativeEvent.coordinate;
-        onPressMap({ lat: c.latitude, lng: c.longitude });
+        onMoveTarget({ lat: c.latitude, lng: c.longitude });
       }}
     >
       {hole.green.polygon && hole.green.polygon.length >= 3 ? (
@@ -82,8 +95,22 @@ export function HoleMap({
         />
       ) : null}
 
+      {/* Línea de tiro: GPS → objetivo (ink) */}
       {gps && target ? (
-        <Polyline coordinates={[gps, target].map(toRN)} strokeColor={theme.colors.ink} strokeWidth={3} />
+        <Polyline
+          coordinates={[gps, target].map(toRN)}
+          strokeColor={theme.colors.ink}
+          strokeWidth={3}
+        />
+      ) : null}
+
+      {/* Línea objetivo → centro del green (acento), solo si el objetivo se ha movido */}
+      {target && movedFromGreen ? (
+        <Polyline
+          coordinates={[target, green].map(toRN)}
+          strokeColor={theme.colors.accent}
+          strokeWidth={3}
+        />
       ) : null}
 
       {gps ? (
@@ -92,15 +119,32 @@ export function HoleMap({
         </Marker>
       ) : null}
 
+      {/* Objetivo movible: arrastrar o tocar el mapa */}
       {target ? (
-        <Marker coordinate={toRN(target)} anchor={{ x: 0.5, y: 0.5 }}>
-          <TargetMarker />
+        <Marker
+          coordinate={toRN(target)}
+          anchor={{ x: 0.5, y: 0.5 }}
+          draggable
+          onDragEnd={(e) => {
+            const c = e.nativeEvent.coordinate;
+            onMoveTarget({ lat: c.latitude, lng: c.longitude });
+          }}
+        >
+          <TargetMarker color={theme.colors.accent} />
         </Marker>
       ) : null}
 
-      {midpoint && aimDistance != null ? (
-        <Marker coordinate={toRN(midpoint)} anchor={{ x: 0.5, y: 0.5 }}>
-          <DistanceChip distance={aimDistance} unit={unit} />
+      {/* Chip distancia de tiro (GPS→objetivo) en el punto medio de su línea */}
+      {gps && target && aimDistance != null ? (
+        <Marker coordinate={toRN(midpoint(gps, target))} anchor={{ x: 0.5, y: 0.5 }}>
+          <DistanceChip distance={aimDistance} unit={unit} tone="ink" />
+        </Marker>
+      ) : null}
+
+      {/* Chip distancia objetivo→green en el punto medio de su línea */}
+      {target && movedFromGreen && toGreenDistance != null ? (
+        <Marker coordinate={toRN(midpoint(target, green))} anchor={{ x: 0.5, y: 0.5 }}>
+          <DistanceChip distance={toGreenDistance} unit={unit} tone="accent" />
         </Marker>
       ) : null}
     </MapView>

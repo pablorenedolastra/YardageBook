@@ -1,18 +1,26 @@
 import { View } from 'react-native';
 import { theme } from '../theme';
 
-/** Objetivo que el jugador coloca tocando el mapa: círculo blanco con anillo oliva. */
-export function TargetMarker() {
+export interface TargetMarkerProps {
+  /** Color del borde del anillo. Por defecto el acento oliva. */
+  color?: string;
+}
+
+/**
+ * Objetivo movible: anillo de borde coloreado con **centro transparente** (se ve el
+ * mapa por dentro). El jugador lo arrastra o toca el mapa para recolocarlo.
+ */
+export function TargetMarker({ color = theme.colors.accent }: TargetMarkerProps) {
   return (
     <View
       testID="target-marker"
       style={{
-        width: 20,
-        height: 20,
-        borderRadius: 10,
-        backgroundColor: theme.colors.markerTarget,
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: 'transparent',
         borderWidth: 3,
-        borderColor: theme.colors.accent,
+        borderColor: color,
       }}
     />
   );
