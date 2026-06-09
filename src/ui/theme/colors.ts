@@ -10,6 +10,7 @@ export const colors = {
   success: '#6E7A3A', // = acento
   warning: '#B5803A', // ámbar terroso
   danger: '#A8492F', // teja apagado
+  markerTarget: '#FFFFFF', // objetivo en el mapa: blanco, contrasta sobre satélite
 } as const;
 
 export type ColorToken = keyof typeof colors;
