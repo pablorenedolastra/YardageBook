@@ -27,7 +27,8 @@ for (let y = 0; y < H; y++) {
     const o = rowStart + 1 + x * 4;
     const v = rnd();
     let a = 0;
-    if (v > 0.965) a = 255; // mota nítida (dispersa, ~3.5% de píxeles)
+    if (v > 0.965)
+      a = 255; // mota nítida (dispersa, ~3.5% de píxeles)
     else if (v > 0.9) a = 90; // grano tenue
     raw[o] = R;
     raw[o + 1] = G;

@@ -42,6 +42,7 @@ app/onboarding/
 ## Task 1: Modelo Profile + ProfileDraft
 
 - [ ] **profile.ts**:
+
 ```ts
 import { DistanceUnit } from './units';
 
@@ -62,7 +63,9 @@ export interface Profile {
 /** Perfil sin id, tal cual se recoge en el formulario antes de persistir. */
 export type ProfileDraft = Omit<Profile, 'id'>;
 ```
+
 - [ ] **app-repository.test.ts**: cambiar el fixture a
+
 ```ts
 const profile: Profile = {
   id: 'p1',
@@ -74,6 +77,7 @@ const profile: Profile = {
   unit: 'meters',
 };
 ```
+
 - [ ] typecheck + `npx jest src/services/storage` (verde) → commit `feat(domain): expand Profile model (name, email, country, handicap)`
 
 ---
@@ -84,6 +88,7 @@ const profile: Profile = {
 
 - [ ] **test (rojo)** cubre: válido completo; faltan obligatorios (firstName/lastName/email/country); email mal formado; handicap fuera de rango (-10..54); handicap vacío = OK; `toProfileDraft` parsea coma decimal y omite handicap vacío.
 - [ ] **impl** `profile-form.ts`:
+
 ```ts
 import { DistanceUnit, ProfileDraft } from '../../domain';
 
@@ -112,7 +117,8 @@ export function validateProfileForm(v: ProfileFormValues): ProfileFormErrors {
   if (v.handicap.trim()) {
     const h = Number(v.handicap.replace(',', '.'));
     if (Number.isNaN(h)) errors.handicap = 'Hándicap no válido';
-    else if (h < HANDICAP_MIN || h > HANDICAP_MAX) errors.handicap = `Hándicap entre ${HANDICAP_MIN} y ${HANDICAP_MAX}`;
+    else if (h < HANDICAP_MIN || h > HANDICAP_MAX)
+      errors.handicap = `Hándicap entre ${HANDICAP_MIN} y ${HANDICAP_MAX}`;
   }
   return errors;
 }
@@ -133,6 +139,7 @@ export function toProfileDraft(v: ProfileFormValues): ProfileDraft {
   };
 }
 ```
+
 - [ ] verde → commit `feat(forms): add profile form validation`
 
 ---
@@ -160,12 +167,14 @@ export function toProfileDraft(v: ProfileFormValues): ProfileDraft {
 ---
 
 ## Definición de "hecho"
+
 - [ ] `Profile` actualizado + `ProfileDraft`; storage verde con el nuevo fixture.
 - [ ] Validación pura testeada.
 - [ ] Pantalla de Paso 1 rellenable; "Continuar" deshabilitado hasta validez; navega al Paso 2 con el draft en contexto.
 - [ ] typecheck/lint/test verdes; export web sin errores.
 
 ## Fuera de alcance
+
 - Persistencia de Profile/ClubMatrix (ocurre al final del Paso 2 — Inc.3).
 - BagEditor / ClubPickerSheet (Inc.3).
 - Lista de países completa (v1 usa lista curada; ampliable).

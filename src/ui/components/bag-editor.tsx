@@ -85,7 +85,9 @@ export function BagEditor({ value, onChange }: BagEditorProps) {
                     color: theme.colors.ink,
                     textAlign: 'right',
                     borderWidth: theme.border.hairline,
-                    borderColor: entryErrors[entry.clubId] ? theme.colors.danger : theme.colors.line,
+                    borderColor: entryErrors[entry.clubId]
+                      ? theme.colors.danger
+                      : theme.colors.line,
                     borderRadius: theme.radius.sm,
                     paddingHorizontal: theme.spacing.sm,
                     paddingVertical: theme.spacing.xs,

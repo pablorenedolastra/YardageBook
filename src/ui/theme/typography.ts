@@ -17,15 +17,35 @@ export const fontFamily = {
 
 /** Escala tipográfica. `satisfies` mantiene la inferencia literal y valida tipos. */
 export const textVariants = {
-  display: { fontFamily: fontFamily.display, fontSize: 40, letterSpacing: -0.5, fontVariant: ['tabular-nums'] },
-  clubName: { fontFamily: fontFamily.display, fontSize: 30, letterSpacing: -0.3, fontVariant: ['tabular-nums'] },
+  display: {
+    fontFamily: fontFamily.display,
+    fontSize: 40,
+    letterSpacing: -0.5,
+    fontVariant: ['tabular-nums'],
+  },
+  clubName: {
+    fontFamily: fontFamily.display,
+    fontSize: 30,
+    letterSpacing: -0.3,
+    fontVariant: ['tabular-nums'],
+  },
   titleApp: { fontFamily: fontFamily.heading, fontSize: 18 },
   sectionHead: { fontFamily: fontFamily.heading, fontSize: 13 },
   body: { fontFamily: fontFamily.body, fontSize: 15, lineHeight: 22 },
   bodyStrong: { fontFamily: fontFamily.bodySemibold, fontSize: 15, lineHeight: 22 },
   small: { fontFamily: fontFamily.body, fontSize: 13, lineHeight: 18 },
-  caption: { fontFamily: fontFamily.bodySemibold, fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase' },
-  labelAccent: { fontFamily: fontFamily.bodyBold, fontSize: 10, letterSpacing: 1.2, textTransform: 'uppercase' },
+  caption: {
+    fontFamily: fontFamily.bodySemibold,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  labelAccent: {
+    fontFamily: fontFamily.bodyBold,
+    fontSize: 10,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
 } satisfies Record<string, TextStyle>;
 
 export type TextVariant = keyof typeof textVariants;

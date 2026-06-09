@@ -15,7 +15,9 @@ export function ScreenPlaceholder({ title, subtitle }: { title: string; subtitle
     >
       <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>{title}</Text>
       {subtitle ? (
-        <Text style={[theme.textVariants.small, { color: theme.colors.muted, textAlign: 'center' }]}>
+        <Text
+          style={[theme.textVariants.small, { color: theme.colors.muted, textAlign: 'center' }]}
+        >
           {subtitle}
         </Text>
       ) : null}

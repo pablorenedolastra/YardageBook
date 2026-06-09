@@ -28,6 +28,7 @@
 ```
 
 **Por qué offline y no consulta en vivo:**
+
 - Un yardage book se usa **en el campo**, a menudo con mala cobertura → los datos deben venir empaquetados.
 - Las instancias públicas de Overpass **no admiten tráfico de producción** (rate-limit / ToS); en pruebas dan 429/timeout con facilidad.
 - Los datos de un campo **no cambian** de un día para otro → no hay valor en consultarlo en vivo.
@@ -128,6 +129,7 @@ export interface CourseProvider {
 ```
 
 **Impl. MVP sugerida (`bundled-course-provider.ts`):**
+
 - Un índice `assets/courses/index.json` (lista de `CourseSummary` + nombre de fichero) generado por el script.
 - `search()` filtra el índice en memoria (normalizar acentos/mayúsculas).
 - `getCourse(id)` hace `require`/`import` del JSON del campo correspondiente.
@@ -150,6 +152,7 @@ node scripts/fetch-courses.mjs --osm-way 237391513 --out assets/courses/valderra
 Exporta también `buildQuery`, `transform`, `polygonCentroid`, `haversine` para tests/reutilización.
 
 **Tareas pendientes del script (para el agente principal):**
+
 1. **Generar `index.json`**: modo batch que recorre una lista de campos objetivo y produce el índice + los JSON individuales.
 2. **Lista de campos objetivo España**: derivarla con una query Overpass de `leisure=golf_course` en España (ver §5) y curarla (quitar pitch&putt/driving ranges si se desea).
 3. (Opcional) **Reducir tamaño**: descartar `polygon`/`playLine` si una primera versión solo necesita centros de green.
@@ -173,7 +176,7 @@ Claves: `map_to_area` convierte el polígono del campo en área consultable (NO 
 
 1. **Hoyos**: `golf=hole` (way con `ref`) → ordenar por `ref`. Cada uno trae `par`/`handicap` en tags.
 2. **Asociación hoyo→green** (los greens son elementos separados, suele haber más greens que hoyos): de los **dos extremos** de la línea de juego, el "lado del pin" es el extremo cuyo **green más cercano** está a menor distancia (haversine). Ese green es el del hoyo.
-3. **Centro del green**: centroide *area-weighted* (shoelace) del polígono `golf=green`; cae a media de vértices si el anillo es degenerado.
+3. **Centro del green**: centroide _area-weighted_ (shoelace) del polígono `golf=green`; cae a media de vértices si el anillo es degenerado.
 4. **Tees**: `golf=tee` con `ref` coincidente, o los que estén a < 60 m del extremo de salida.
 5. **Centro del campo**: centroide del polígono `leisure=golf_course`.
 
@@ -183,17 +186,18 @@ Claves: `map_to_area` convierte el polígono del campo en área consultable (NO 
 
 ## 5. Censo de cobertura en España (datos reales, jun-2026)
 
-| Elemento | Cantidad |
-|---|---|
+| Elemento              | Cantidad                       |
+| --------------------- | ------------------------------ |
 | `leisure=golf_course` | 592 (447 ways + 145 relations) |
-| `golf=green` | 4.364 |
-| `golf=hole` | 3.090 |
-| `golf=tee` | (miles) |
-| `golf=bunker` | (miles) |
+| `golf=green`          | 4.364                          |
+| `golf=hole`           | 3.090                          |
+| `golf=tee`            | (miles)                        |
+| `golf=bunker`         | (miles)                        |
 
 ~348 campos federados (RFEG/EGA 2023); 592 incluye pitch&putt/ranges/no federados. **Greens abundan** (lo que más importa). La completitud por campo es desigual → validar con el script antes de publicar un campo.
 
 Query para listar todos los campos de España (genera la lista objetivo):
+
 ```overpassql
 [out:json][timeout:180];
 area["ISO3166-1"="ES"][admin_level=2]->.es;
@@ -225,6 +229,7 @@ export function haversineMeters(a: LatLng, b: LatLng): number {
 ```
 
 **Flujo en la pantalla de juego (§5.8 del spec UX):**
+
 1. GPS del jugador vía `expo-location` → `LatLng`.
 2. Usuario toca el mapa → objetivo `LatLng` (evento `onPress` de react-native-maps).
 3. `distanciaObjetivo = haversineMeters(gps, objetivo)` → es la `targetDistance` que **alimenta `recommendClub`** (motor ya existente, sin cambios).
@@ -246,9 +251,10 @@ export function haversineMeters(a: LatLng, b: LatLng): number {
 
 ## 8. Licencia, atribución y calidad
 
-**Licencia ODbL 1.0:** uso comercial permitido, sin royalties, sin restricción de campo. Obligaciones: **(1) atribuir a OpenStreetMap** y **(2) share-alike** — esta última **solo** si publicas/redistribuyes la *base de datos derivada*; **mostrar mapas en la app NO la dispara** (es una "Produced Work", solo atribución). Si algún día se redistribuye públicamente el dataset de hoyos modificado, ese dataset debe permanecer abierto bajo ODbL (pedir revisión legal entonces).
+**Licencia ODbL 1.0:** uso comercial permitido, sin royalties, sin restricción de campo. Obligaciones: **(1) atribuir a OpenStreetMap** y **(2) share-alike** — esta última **solo** si publicas/redistribuyes la _base de datos derivada_; **mostrar mapas en la app NO la dispara** (es una "Produced Work", solo atribución). Si algún día se redistribuye públicamente el dataset de hoyos modificado, ese dataset debe permanecer abierto bajo ODbL (pedir revisión legal entonces).
 
-**Calidad / fallback:** OSM *puede* representar todo, pero hay campos con solo el perímetro. Estrategia:
+**Calidad / fallback:** OSM _puede_ representar todo, pero hay campos con solo el perímetro. Estrategia:
+
 1. Correr el script por campo y mirar `holeCount` + nº de hoyos con green.
 2. Campo completo → publicar. Campo incompleto → **digitalizar a mano** sobre imagen satélite (en iD/JOSM contribuyendo a OSM, o en JSON propio). Fuentes de imagen compatibles con OSM: **Bing/Esri** (tienen acuerdo); **Google no**.
 3. MVP: empezar por una **región piloto densa** (Costa del Sol / Valencia) para validar el pipeline antes de escalar.

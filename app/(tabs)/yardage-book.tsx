@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { ClubMatrix, Profile } from '../../src/domain';
 import { createAppRepository } from '../../src/services/storage';
+import { AppBackground } from '../../src/ui/components/app-background';
 import { BagEditor } from '../../src/ui/components/bag-editor';
 import { PrimaryButton } from '../../src/ui/components/primary-button';
 import { SecondaryButton } from '../../src/ui/components/secondary-button';
@@ -60,69 +61,81 @@ export default function YardageBookTab() {
   };
 
   if (loading) {
-    return <View style={{ flex: 1 }} />;
+    return (
+      <AppBackground>
+        <View style={{ flex: 1 }} />
+      </AppBackground>
+    );
   }
 
   if (mode === 'edit' && draft) {
     return (
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
-      >
-        <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>Editar bolsa</Text>
-        <BagEditor value={draft} onChange={setDraft} />
-        <PrimaryButton title="Guardar bolsa" onPress={save} disabled={!isBagValid(draft)} />
-        <SecondaryButton title="Cancelar" onPress={() => setMode('view')} />
-      </ScrollView>
+      <AppBackground>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentInsetAdjustmentBehavior="automatic"
+          contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
+        >
+          <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>
+            Editar bolsa
+          </Text>
+          <BagEditor value={draft} onChange={setDraft} />
+          <PrimaryButton title="Guardar bolsa" onPress={save} disabled={!isBagValid(draft)} />
+          <SecondaryButton title="Cancelar" onPress={() => setMode('view')} />
+        </ScrollView>
+      </AppBackground>
     );
   }
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
-    >
-      <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>Yardage Book</Text>
+    <AppBackground>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={{ padding: theme.spacing.xl, gap: theme.spacing.lg }}
+      >
+        <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>Yardage Book</Text>
 
-      {matrix && matrix.entries.length > 0 ? (
-        <>
-          <Text style={[theme.textVariants.small, { color: theme.colors.muted }]}>
-            Medido en {monthName(matrix.measuredContext.month)}
-            {matrix.measuredContext.city ? ` · ${matrix.measuredContext.city}` : ''}
-          </Text>
-          <View>
-            {matrix.entries.map((entry) => (
-              <View
-                key={entry.clubId}
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingVertical: theme.spacing.md,
-                  borderBottomWidth: theme.border.hairline,
-                  borderBottomColor: theme.colors.line,
-                }}
-              >
-                <Text style={[theme.textVariants.body, { color: theme.colors.ink }]}>
-                  {entry.label}
-                </Text>
-                <Text
-                  style={[
-                    theme.textVariants.bodyStrong,
-                    { color: theme.colors.ink, fontVariant: ['tabular-nums'] },
-                  ]}
+        {matrix && matrix.entries.length > 0 ? (
+          <>
+            <Text style={[theme.textVariants.small, { color: theme.colors.muted }]}>
+              Medido en {monthName(matrix.measuredContext.month)}
+              {matrix.measuredContext.city ? ` · ${matrix.measuredContext.city}` : ''}
+            </Text>
+            <View>
+              {matrix.entries.map((entry) => (
+                <View
+                  key={entry.clubId}
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    paddingVertical: theme.spacing.md,
+                    borderBottomWidth: theme.border.hairline,
+                    borderBottomColor: theme.colors.line,
+                  }}
                 >
-                  {entry.carryDistance} {unit}
-                </Text>
-              </View>
-            ))}
-          </View>
-          <PrimaryButton title="Editar bolsa" onPress={startEdit} />
-        </>
-      ) : (
-        <Text style={[theme.textVariants.body, { color: theme.colors.muted }]}>
-          Aún no tienes palos en tu bolsa.
-        </Text>
-      )}
-    </ScrollView>
+                  <Text style={[theme.textVariants.body, { color: theme.colors.ink }]}>
+                    {entry.label}
+                  </Text>
+                  <Text
+                    style={[
+                      theme.textVariants.bodyStrong,
+                      { color: theme.colors.ink, fontVariant: ['tabular-nums'] },
+                    ]}
+                  >
+                    {entry.carryDistance} {unit}
+                  </Text>
+                </View>
+              ))}
+            </View>
+            <PrimaryButton title="Editar bolsa" onPress={startEdit} />
+          </>
+        ) : (
+          <Text style={[theme.textVariants.body, { color: theme.colors.muted }]}>
+            Aún no tienes palos en tu bolsa.
+          </Text>
+        )}
+      </ScrollView>
+    </AppBackground>
   );
 }

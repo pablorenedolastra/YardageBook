@@ -28,7 +28,7 @@ proyecto.
 | ----------------- | ----------------------------------------------------- |
 | Papel base        | Crema claro `#EFE7D6` con motas marrón sutiles        |
 | Texto             | Marrón madera `#5A4632`                               |
-| Acento            | Verde oliva apagado `#6E7A3A`                          |
+| Acento            | Verde oliva apagado `#6E7A3A`                         |
 | Tipografía cifras | Space Grotesk (700)                                   |
 | Tipografía cuerpo | Inter                                                 |
 | Forma             | Plano con líneas finas (sin sombras), esquinas suaves |
@@ -79,16 +79,16 @@ Dos familias Google Fonts, cargadas con `@expo-google-fonts/*` + `useFonts`:
 
 ### Escala tipográfica
 
-| Token         | Familia       | Tamaño / peso | Uso                                  |
-| ------------- | ------------- | ------------- | ------------------------------------ |
-| `display`     | Space Grotesk | 40 / 700      | La cifra protagonista ("143 m")      |
-| `clubName`    | Space Grotesk | 30 / 700      | Palo recomendado ("Hierro 7")        |
-| `titleApp`    | Space Grotesk | 18 / 700      | Título de barra superior             |
-| `sectionHead` | Space Grotesk | 13 / 700      | Encabezados de bloque                |
-| `body`        | Inter         | 15 / 400      | Texto general                        |
-| `bodyStrong`  | Inter         | 15 / 600      | Texto enfatizado, valores en listas  |
-| `small`       | Inter         | 13 / 400      | Texto secundario                     |
-| `caption`     | Inter         | 11 / 600      | Etiquetas UPPERCASE, tracking .14em  |
+| Token         | Familia       | Tamaño / peso | Uso                                     |
+| ------------- | ------------- | ------------- | --------------------------------------- |
+| `display`     | Space Grotesk | 40 / 700      | La cifra protagonista ("143 m")         |
+| `clubName`    | Space Grotesk | 30 / 700      | Palo recomendado ("Hierro 7")           |
+| `titleApp`    | Space Grotesk | 18 / 700      | Título de barra superior                |
+| `sectionHead` | Space Grotesk | 13 / 700      | Encabezados de bloque                   |
+| `body`        | Inter         | 15 / 400      | Texto general                           |
+| `bodyStrong`  | Inter         | 15 / 600      | Texto enfatizado, valores en listas     |
+| `small`       | Inter         | 13 / 400      | Texto secundario                        |
+| `caption`     | Inter         | 11 / 600      | Etiquetas UPPERCASE, tracking .14em     |
 | `labelAccent` | Inter         | 10 / 700      | "TU PALO" sobre la recomendación, .12em |
 
 ---
@@ -100,12 +100,12 @@ de pantalla: `18–20`. Densidad media-espaciosa.
 
 **Radios de esquina:**
 
-| Token        | Valor | Uso                          |
-| ------------ | ----- | ---------------------------- |
-| `radiusSm`   | 9     | Botones, campos, segmentos   |
-| `radiusMd`   | 12    | Tarjetas (objetivo, reco)    |
+| Token        | Valor | Uso                            |
+| ------------ | ----- | ------------------------------ |
+| `radiusSm`   | 9     | Botones, campos, segmentos     |
+| `radiusMd`   | 12    | Tarjetas (objetivo, reco)      |
 | `radiusLg`   | 18    | Paneles / contenedores grandes |
-| `radiusPill` | 6     | Píldoras de estado           |
+| `radiusPill` | 6     | Píldoras de estado             |
 
 **Bordes:** línea fina de **1.5px**. `line` para neutros; `accent` para resaltar
 (tarjeta de recomendación, botón secundario).
@@ -145,19 +145,19 @@ mezcla `multiply` sobre el crema.
 Cada uno es un componente aislado en `src/ui/components/`, parametrizado por
 tokens. Contrato: qué hace, cómo se usa, de qué depende (tokens del tema).
 
-| Componente          | Notas de estilo                                                              |
-| ------------------- | ---------------------------------------------------------------------------- |
-| `Button` (primary)  | Relleno `accent`, texto `accentOn` Space Grotesk 700, `radiusSm`. Pressed → `accentDark`. |
-| `Button` (secondary)| Transparente, borde 1.5px `accent`, texto `accent`.                          |
-| `NumberField`       | Borde `line` 1.5px, `radiusSm`, placeholder `muted`, sufijo de unidad `muted`. |
-| `SegmentedControl`  | Selector tipo metros/yardas; segmento activo relleno `accent`/`accentOn`.    |
-| `Card`              | Fondo `paper`, borde `line` 1.5px, `radiusMd`. Variante `accent` para resaltar. |
-| `RecommendationCard`| **Pieza estrella.** Borde `accent`, etiqueta `labelAccent`, palo en `clubName`, subtexto `muted`. |
-| `TargetCard`        | Cifra `display` + fila de condiciones (temp / humedad / pendiente) en `small`/`muted`. |
-| `MatrixRow`         | Fila palo↔distancia, separador `line`, distancia en `bodyStrong` Space Grotesk. |
-| `StatePill`         | Píldora de contorno (`success`/`warning`/`danger`), `radiusPill`.            |
-| `TabBar`            | Borde superior `line`, iconos de línea, activo en `accent`.                  |
-| `AppBackground`     | Envoltorio que pinta `paper` + capa de textura sutil.                        |
+| Componente           | Notas de estilo                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------- |
+| `Button` (primary)   | Relleno `accent`, texto `accentOn` Space Grotesk 700, `radiusSm`. Pressed → `accentDark`.         |
+| `Button` (secondary) | Transparente, borde 1.5px `accent`, texto `accent`.                                               |
+| `NumberField`        | Borde `line` 1.5px, `radiusSm`, placeholder `muted`, sufijo de unidad `muted`.                    |
+| `SegmentedControl`   | Selector tipo metros/yardas; segmento activo relleno `accent`/`accentOn`.                         |
+| `Card`               | Fondo `paper`, borde `line` 1.5px, `radiusMd`. Variante `accent` para resaltar.                   |
+| `RecommendationCard` | **Pieza estrella.** Borde `accent`, etiqueta `labelAccent`, palo en `clubName`, subtexto `muted`. |
+| `TargetCard`         | Cifra `display` + fila de condiciones (temp / humedad / pendiente) en `small`/`muted`.            |
+| `MatrixRow`          | Fila palo↔distancia, separador `line`, distancia en `bodyStrong` Space Grotesk.                   |
+| `StatePill`          | Píldora de contorno (`success`/`warning`/`danger`), `radiusPill`.                                 |
+| `TabBar`             | Borde superior `line`, iconos de línea, activo en `accent`.                                       |
+| `AppBackground`      | Envoltorio que pinta `paper` + capa de textura sutil.                                             |
 
 ---
 
@@ -198,4 +198,7 @@ una regla de lint que prohíba colores hex en `components/` y `screens/`.
 - Valores exactos de **line-height** y `letterSpacing` por token tipográfico.
 - Tamaños de toque mínimos (accesibilidad: objetivo ≥ 44pt).
 - Carga de fuentes y pantalla de splash mientras cargan (`useFonts`).
+
+```
+
 ```

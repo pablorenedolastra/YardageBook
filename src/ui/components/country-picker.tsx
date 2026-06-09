@@ -13,10 +13,7 @@ export interface CountryPickerProps {
 
 /** Normaliza para búsqueda: minúsculas y sin acentos. */
 function normalize(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '');
+  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
 
 /** Selector de país: dispara un modal con buscador sobre la lista curada. */
