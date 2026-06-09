@@ -1,6 +1,6 @@
 # YardageBook — Estado del proyecto y guía para retomar
 
-> **Última actualización:** 2026-06-09 · **Rama principal:** `main` (protegida) · **78 tests verdes**
+> **Última actualización:** 2026-06-09 · **Rama principal:** `main` (protegida) · **95 tests verdes**
 
 Documento vivo de continuidad. Si retomas el proyecto (o empiezas una sesión
 nueva), **lee esto primero**. Apunta a los specs y planes con el detalle.
@@ -17,7 +17,7 @@ dispositivo. La meteo y los datos de campos son las únicas fuentes externas.
 
 **Specs (fuente de verdad del diseño):**
 - Producto v1: [`docs/specs/2026-06-02-yardagebook-design.md`](specs/2026-06-02-yardagebook-design.md)
-- Sistema de diseño: [`docs/specs/2026-06-02-yardagebook-design-system.md`](specs/2026-06-02-yardagebook-design-system.md)
+- Sistema de diseño: [`docs/design-system/2026-06-02-yardagebook-design-system.md`](design-system/2026-06-02-yardagebook-design-system.md)
 - Pantallas y flujos (manda sobre el de producto donde difieran): [`docs/specs/2026-06-03-yardagebook-ux-screens.md`](specs/2026-06-03-yardagebook-ux-screens.md)
 - Proveedor de campos (OSM): [`docs/specs/2026-06-05-courses-provider-osm.md`](specs/2026-06-05-courses-provider-osm.md)
 
@@ -71,23 +71,33 @@ orden del spec de pantallas (§10).
 | 5 | Perfil (pestaña ver/editar) | ✅ | #8 |
 | 5.5 | Dominio de campos (`geo`/`course` + `haversineMeters`) | ✅ | #4 |
 | — | Fix solapamiento de pantallas en web | ✅ | #9 |
-| **6** | **Juego · Selección de campo** (servicio `courses` OSM real) | ⏳ siguiente | — |
-| **7** | **Juego · Hoyo** (mapa, GPS, recomendación) — **requiere dev build** | ⏳ | — |
+| **6** | **Juego · Selección de campo** (servicio `courses` OSM real) | ✅ | #11 |
+| **7** | **Juego · Hoyo** (mapa, GPS, recomendación) — **requiere dev build** | ⏳ siguiente | — |
 
 **Funciona hoy (preview web):** onboarding completo (perfil → bolsa → guardar →
 entra a tabs), Yardage Book ver/editar, Perfil ver/editar (unidades cambian y
-persisten), gating (reabrir con perfil → directo a tabs).
+persisten), gating (reabrir con perfil → directo a tabs), **Selección de campo**
+(buscar → resultados → elegir → recientes; placeholder de Hoyo 1).
 
-### Incremento 6 (siguiente) — tareas
-Ver `docs/specs/2026-06-05-courses-provider-osm.md` §9. Resumen:
-1. Servicio `src/services/courses/`: interfaz `CourseProvider` (`search`,
-   `getCourse`) + `BundledCourseProvider` que lee de `assets/courses/` + mock para tests.
-2. Extender `scripts/fetch-courses.mjs` a modo batch → genera `assets/courses/index.json` + JSON por campo.
-3. Bajar 5-10 campos piloto (región densa: Costa del Sol / Valencia) a `assets/courses/`.
-4. `AppRepository`: `loadCourseHistory`/`saveCourseHistory` (recientes).
-5. Pantalla Selección de campo (`SearchAutocomplete` + `CourseListItem` + recientes). **Visible en web.**
+### Incremento 6 — hecho
+Plan: [`docs/plans/2026-06-09-inc6-course-selection.md`](plans/2026-06-09-inc6-course-selection.md).
+- Servicio `src/services/courses/`: `CourseProvider`, `CourseRegistry`,
+  `BundledCourseProvider` (registro **inyectable** → testeable sin ficheros),
+  `addRecentCourse` (puro), `createCourseProvider()`.
+- `scripts/fetch-courses.mjs --batch`: **acumulativo** (reconstruye `index.json` +
+  `registry.ts` desde todos los `<id>.json` en disco) + **reintentos con backoff**.
+- `AppRepository.load/saveCourseHistory` (clave `yardagebook:course-history`).
+- Pantalla `app/(tabs)/index.tsx` (buscador + recientes) + `app/game/[courseId].tsx`
+  (placeholder Hoyo 1 con atribución ODbL).
 
-### Incremento 7 — tareas (último; cambia el modo de ejecución)
+> **Datos piloto:** solo **2 campos** bajados (Valderrama 18/18, Las Brisas 18/18),
+> no 5-10. Causa: los mirrors **públicos** de Overpass devuelven 504/timeout
+> (rate-limit) y varios nombres no casan con el tag OSM (devuelven 0 greens) →
+> harían falta sus `osm-way` concretos. El pipeline es acumulativo: re-ejecutar
+> `node scripts/fetch-courses.mjs --batch` (o `--osm-way <id> --out ...` + regenerar)
+> suma campos sin perder los bajados. Ampliar el set queda como tarea de datos.
+
+### Incremento 7 (siguiente) — tareas (último; cambia el modo de ejecución)
 - `react-native-maps` (satélite) + `expo-location` (GPS) → **development build**
   (no Expo Go ni web). `HoleMap`, `GpsMarker`, `TargetMarker` (onPress),
   `AimLine`+`DistanceChip` (haversine→`recommendClub`), `RecommendationBar`,

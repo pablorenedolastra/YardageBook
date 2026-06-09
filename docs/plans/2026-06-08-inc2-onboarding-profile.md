@@ -6,7 +6,7 @@
 
 **Architecture:** `domain` gana los campos de `Profile` + tipo `ProfileDraft`. Validación de formulario como función pura testeable en `src/ui/forms`. Componentes en `src/ui/components` (tokens del tema, cero literales). Onboarding pasa a ruta de carpeta `app/onboarding/` (Stack) con un contexto en memoria para el draft entre pasos.
 
-**Refs:** [UX screens](../specs/2026-06-03-yardagebook-ux-screens.md) §5.1 · [Design system](../specs/2026-06-02-yardagebook-design-system.md) §8.
+**Refs:** [UX screens](../specs/2026-06-03-yardagebook-ux-screens.md) §5.1 · [Design system](../design-system/2026-06-02-yardagebook-design-system.md) §8.
 
 ---
 

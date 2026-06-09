@@ -8,7 +8,7 @@
 
 **Tech Stack:** expo-router (SDK 56), react-native-safe-area-context, @testing-library/react-native, Jest.
 
-**Refs:** [UX screens](../specs/2026-06-03-yardagebook-ux-screens.md) §4 · [Design system](../specs/2026-06-02-yardagebook-design-system.md) §8 (`TabBar`).
+**Refs:** [UX screens](../specs/2026-06-03-yardagebook-ux-screens.md) §4 · [Design system](../design-system/2026-06-02-yardagebook-design-system.md) §8 (`TabBar`).
 
 ---
 

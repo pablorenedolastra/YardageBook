@@ -3,7 +3,7 @@
 - **Fecha:** 2026-06-03
 - **Estado:** Aprobado para planificación
 - **Idioma de la app:** Español
-- **Documentos relacionados:** [Diseño de producto v1](./2026-06-02-yardagebook-design.md) · [Sistema de diseño](./2026-06-02-yardagebook-design-system.md)
+- **Documentos relacionados:** [Diseño de producto v1](./2026-06-02-yardagebook-design.md) · [Sistema de diseño](../design-system/2026-06-02-yardagebook-design-system.md)
 
 ---
 
@@ -12,7 +12,7 @@
 Define todas las pantallas y flujos de la v1: onboarding (perfil + bolsa), las tres
 pestañas principales (**Juego**, **Yardage Book**, **Perfil**) y el flujo de juego
 estilo "GPS de campo" (elegir campo → hoyo con mapa aéreo, posición GPS, objetivo
-táctil y palo recomendado en tiempo real). Toda la UI usa el [sistema de diseño](./2026-06-02-yardagebook-design-system.md)
+táctil y palo recomendado en tiempo real). Toda la UI usa el [sistema de diseño](../design-system/2026-06-02-yardagebook-design-system.md)
 (papel crema, acento oliva, Space Grotesk + Inter, plano con líneas).
 
 ---
