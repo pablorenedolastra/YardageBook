@@ -16,11 +16,12 @@ cuentas). iPhone primero, Android después.
 
 ## Documentación
 
-- Diseño v1: [`docs/specs/2026-06-02-yardagebook-design.md`](docs/specs/2026-06-02-yardagebook-design.md)
+- **Estado del proyecto y cómo retomar: [`docs/PROGRESS.md`](docs/PROGRESS.md)** ← empieza aquí
+- Specs (diseño): `docs/specs/`
 - Planes de implementación: `docs/plans/`
-- Decisiones técnicas (ADRs): `docs/decisions/`
 
 ## Estado
 
-🚧 En arranque (zero-to-one). Definido el diseño de la v1; pendiente el plan de
-implementación y el código.
+🚧 En construcción. Onboarding, Yardage Book y Perfil funcionando (local-first).
+Pendiente el flujo de Juego (selección de campo + mapa/GPS). Detalle y siguientes
+pasos en [`docs/PROGRESS.md`](docs/PROGRESS.md).
