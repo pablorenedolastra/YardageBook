@@ -17,7 +17,7 @@ dispositivo. La meteo y los datos de campos son las únicas fuentes externas.
 
 **Specs (fuente de verdad del diseño):**
 - Producto v1: [`docs/specs/2026-06-02-yardagebook-design.md`](specs/2026-06-02-yardagebook-design.md)
-- Sistema de diseño: [`docs/specs/2026-06-02-yardagebook-design-system.md`](specs/2026-06-02-yardagebook-design-system.md)
+- Sistema de diseño: [`docs/design-system/2026-06-02-yardagebook-design-system.md`](design-system/2026-06-02-yardagebook-design-system.md)
 - Pantallas y flujos (manda sobre el de producto donde difieran): [`docs/specs/2026-06-03-yardagebook-ux-screens.md`](specs/2026-06-03-yardagebook-ux-screens.md)
 - Proveedor de campos (OSM): [`docs/specs/2026-06-05-courses-provider-osm.md`](specs/2026-06-05-courses-provider-osm.md)
 

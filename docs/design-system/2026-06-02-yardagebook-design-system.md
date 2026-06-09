@@ -3,7 +3,7 @@
 - **Fecha:** 2026-06-02
 - **Estado:** Aprobado para planificación
 - **Ámbito:** Aspecto visual y componentes base de la UI (`src/ui/`)
-- **Documento padre:** [Documento de diseño (v1 / MVP)](./2026-06-02-yardagebook-design.md)
+- **Documento padre:** [Documento de diseño (v1 / MVP)](../specs/2026-06-02-yardagebook-design.md)
 
 ---
 

@@ -12,7 +12,7 @@
 
 **Scope note:** This plan delivers the _foundation only_. The base components (`Button`, `NumberField`, `SegmentedControl`, `Card`, `RecommendationCard`, `TargetCard`, `MatrixRow`, `StatePill`, `TabBar`) are a **separate follow-up plan** that builds on these tokens.
 
-**Spec:** [docs/specs/2026-06-02-yardagebook-design-system.md](../specs/2026-06-02-yardagebook-design-system.md)
+**Spec:** [docs/design-system/2026-06-02-yardagebook-design-system.md](../design-system/2026-06-02-yardagebook-design-system.md)
 
 ---
 
