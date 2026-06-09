@@ -11,13 +11,38 @@
  *   node scripts/fetch-courses.mjs --name "Valderrama"        # por nombre
  *   node scripts/fetch-courses.mjs --osm-way 12345            # por id de way
  *   node scripts/fetch-courses.mjs --name "Valderrama" --out assets/courses/valderrama.json
+ *   node scripts/fetch-courses.mjs --batch                    # campos piloto -> assets/courses/
  *
  * Sin dependencias externas: usa fetch global (Node >= 18) y fs.
  * Datos © OpenStreetMap contributors, ODbL 1.0.
  */
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
+
+/** Carpeta destino del bundle de campos. */
+const COURSES_DIR = 'assets/courses';
+
+/**
+ * Campos piloto (región densa: Costa del Sol / Sotogrande). Se buscan por nombre;
+ * añade `osmWay` si hay ambigüedad. La curación final la decide `holeCount` por
+ * campo (los muy incompletos se descartan en el batch).
+ */
+const PILOT_TARGETS = [
+  { name: 'Valderrama' },
+  { name: 'La Cañada Golf' },
+  { name: 'Real Club de Golf Sotogrande' },
+  { name: 'Almenara Golf' },
+  { name: 'La Reserva Club Sotogrande' },
+  { name: 'Finca Cortesín' },
+  { name: 'Real Club de Golf Las Brisas' },
+  { name: 'Los Naranjos Golf Club' },
+  { name: 'Aloha Golf Club' },
+  { name: 'Atalaya Golf' },
+];
+
+/** Mínimo de hoyos con centro de green para considerar un campo publicable. */
+const MIN_HOLES_WITH_GREEN = 9;
 
 const OVERPASS_ENDPOINTS = [
   'https://overpass-api.de/api/interpreter',
@@ -51,26 +76,32 @@ function escapeRegex(s) {
   return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-/** Lanza la query con failover entre endpoints públicos. */
-async function runOverpass(query) {
+/** Lanza la query con failover entre endpoints públicos y reintentos por ronda. */
+async function runOverpass(query, { retries = 2, backoffMs = 4000 } = {}) {
   let lastErr;
-  for (const endpoint of OVERPASS_ENDPOINTS) {
-    try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'User-Agent': USER_AGENT,
-        },
-        body: 'data=' + encodeURIComponent(query),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status} en ${endpoint}`);
-      const json = await res.json();
-      if (!json.elements) throw new Error('respuesta sin "elements"');
-      return json.elements;
-    } catch (err) {
-      lastErr = err;
-      console.warn(`  ⚠ ${endpoint}: ${err.message} — probando siguiente mirror…`);
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    for (const endpoint of OVERPASS_ENDPOINTS) {
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': USER_AGENT,
+          },
+          body: 'data=' + encodeURIComponent(query),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status} en ${endpoint}`);
+        const json = await res.json();
+        if (!json.elements) throw new Error('respuesta sin "elements"');
+        return json.elements;
+      } catch (err) {
+        lastErr = err;
+        console.warn(`  ⚠ ${endpoint}: ${err.message} — probando siguiente mirror…`);
+      }
+    }
+    if (attempt < retries) {
+      console.warn(`  ↻ ronda ${attempt + 1} agotada; esperando ${backoffMs}ms y reintentando…`);
+      await new Promise((r) => setTimeout(r, backoffMs));
     }
   }
   throw new Error(`Todos los endpoints Overpass fallaron: ${lastErr?.message}`);
@@ -231,7 +262,114 @@ function transform(elements, fallbackName) {
 }
 
 // ---------------------------------------------------------------------------
-// 4) CLI
+// 4) BATCH: lista de campos -> assets/courses/<id>.json + index.json + registry.ts
+// ---------------------------------------------------------------------------
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Identificador JS válido a partir de un id de campo (osm-way-1 -> osm_way_1). */
+function toIdent(id) {
+  return id.replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+/** Genera el módulo registry.ts (AUTO-GENERATED) con el mapa estático id -> JSON. */
+function buildRegistryModule(summaries) {
+  const imports = summaries
+    .map((s) => `import ${toIdent(s.id)} from './${s.id}.json';`)
+    .join('\n');
+  const entries = summaries
+    .map((s) => `  '${s.id}': ${toIdent(s.id)} as unknown as Course,`)
+    .join('\n');
+  return `// AUTO-GENERATED por scripts/fetch-courses.mjs --batch. No editar a mano.
+// Datos © OpenStreetMap contributors, ODbL 1.0.
+import type { Course } from '../../src/domain';
+import type { CourseRegistry } from '../../src/services/courses/course-registry';
+import type { CourseSummary } from '../../src/services/courses/course-provider';
+import index from './index.json';
+${imports}
+
+const data: Record<string, Course> = {
+${entries}
+};
+
+/** Registro estático de campos empaquetados. */
+export const courseRegistry: CourseRegistry = {
+  index: index as CourseSummary[],
+  load: (id) => data[id] ?? null,
+};
+`;
+}
+
+/** Reconstruye index.json + registry.ts a partir de TODOS los <id>.json en disco. */
+function rebuildBundleIndex() {
+  const files = readdirSync(COURSES_DIR).filter(
+    (f) => f.endsWith('.json') && f !== 'index.json',
+  );
+  const summaries = files
+    .map((f) => JSON.parse(readFileSync(`${COURSES_DIR}/${f}`, 'utf8')))
+    .map((course) => ({
+      id: course.id,
+      name: course.name,
+      location: course.location,
+      holeCount: course.holeCount,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'es'));
+
+  writeFileSync(`${COURSES_DIR}/index.json`, JSON.stringify(summaries, null, 2));
+  writeFileSync(`${COURSES_DIR}/registry.ts`, buildRegistryModule(summaries));
+  return summaries;
+}
+
+/**
+ * Procesa la lista de campos piloto. Es ACUMULATIVO: cada campo que entra se
+ * guarda como <id>.json, y el índice/registry se reconstruyen desde todos los
+ * JSON presentes en disco. Así reintentar tras fallos de red no pierde lo ya bajado.
+ */
+async function runBatch(targets) {
+  mkdirSync(COURSES_DIR, { recursive: true });
+  let added = 0;
+  let failed = 0;
+
+  for (const target of targets) {
+    const label = target.name ?? `way ${target.osmWay}`;
+    try {
+      console.log(`→ ${label}…`);
+      const elements = await runOverpass(buildQuery(target));
+      const course = transform(elements, target.name);
+      const withGreen = course.holes.filter((h) => h.green.center).length;
+
+      if (withGreen < MIN_HOLES_WITH_GREEN) {
+        console.warn(
+          `  ⏭ descartado: solo ${withGreen} hoyos con green (mínimo ${MIN_HOLES_WITH_GREEN}).`,
+        );
+        failed++;
+        await sleep(1500);
+        continue;
+      }
+
+      writeFileSync(`${COURSES_DIR}/${course.id}.json`, JSON.stringify(course, null, 2));
+      added++;
+      console.log(`  ✓ ${course.name} — ${course.holeCount} hoyos (${withGreen} con green).`);
+    } catch (err) {
+      console.warn(`  ✗ ${label}: ${err.message}`);
+      failed++;
+    }
+    await sleep(1500); // cortesía con los mirrors públicos de Overpass
+  }
+
+  const summaries = rebuildBundleIndex();
+  if (summaries.length === 0) {
+    throw new Error('Ningún campo en assets/courses/. Bundle no generado.');
+  }
+
+  console.log(
+    `\n✓ Bundle: ${summaries.length} campos en total (${added} nuevos este run, ` +
+      `${failed} descartados/fallidos). index.json + registry.ts regenerados.`,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 5) CLI
 // ---------------------------------------------------------------------------
 
 function parseArgs(argv) {
@@ -241,14 +379,21 @@ function parseArgs(argv) {
     if (a === '--name') out.name = argv[++i];
     else if (a === '--osm-way') out.osmWay = argv[++i];
     else if (a === '--out') out.out = argv[++i];
+    else if (a === '--batch') out.batch = true;
   }
   return out;
 }
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  if (args.batch) {
+    await runBatch(PILOT_TARGETS);
+    return;
+  }
   if (!args.name && !args.osmWay) {
-    console.error('Uso: node scripts/fetch-courses.mjs --name "Valderrama" [--out file.json]');
+    console.error(
+      'Uso: node scripts/fetch-courses.mjs --name "Valderrama" [--out file.json] | --batch',
+    );
     process.exit(1);
   }
   console.log(`→ Consultando Overpass para "${args.name ?? 'way ' + args.osmWay}"…`);
@@ -276,4 +421,4 @@ main().catch((err) => {
   process.exit(1);
 });
 
-export { buildQuery, transform, polygonCentroid, haversine };
+export { buildQuery, transform, polygonCentroid, haversine, buildRegistryModule, toIdent };

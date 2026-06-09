@@ -1,0 +1,20 @@
+[
+  {
+    "id": "osm-way-237391513",
+    "name": "Club de Golf Valderrama",
+    "location": {
+      "lat": 36.2852124481506,
+      "lng": -5.330043582833927
+    },
+    "holeCount": 18
+  },
+  {
+    "id": "osm-way-97671239",
+    "name": "Real Club de Golf Las Brisas",
+    "location": {
+      "lat": 36.50643333369905,
+      "lng": -4.9690671517792815
+    },
+    "holeCount": 18
+  }
+]
