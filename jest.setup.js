@@ -12,3 +12,28 @@ jest.mock('expo-font', () => ({
   loadAsync: jest.fn(() => Promise.resolve()),
   processFontFamily: jest.fn((family) => family),
 }));
+
+// react-native-maps es un módulo nativo (no va en jest). Lo mockeamos como Views
+// para poder hacer smoke tests de los componentes que lo usan (HoleMap).
+jest.mock('react-native-maps', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const Passthrough = ({ children, ...props }) => React.createElement(View, props, children);
+  return {
+    __esModule: true,
+    default: Passthrough, // MapView
+    Marker: Passthrough,
+    Polygon: Passthrough,
+    Polyline: Passthrough,
+  };
+});
+
+// expo-location: permiso concedido + posición fija, para tests deterministas.
+jest.mock('expo-location', () => ({
+  requestForegroundPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  watchPositionAsync: jest.fn(() => Promise.resolve({ remove: jest.fn() })),
+  getCurrentPositionAsync: jest.fn(() =>
+    Promise.resolve({ coords: { latitude: 36.28, longitude: -5.33 } }),
+  ),
+  Accuracy: { Balanced: 3, High: 4 },
+}));
