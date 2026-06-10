@@ -1,5 +1,7 @@
+import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CatalogClub, clubsByGroup } from '../forms/clubs';
 import { theme } from '../theme';
 
@@ -22,6 +24,7 @@ export function ClubPickerSheet({
 }: ClubPickerSheetProps) {
   const [customLabel, setCustomLabel] = useState('');
   const added = new Set(addedClubIds);
+  const insets = useSafeAreaInsets();
 
   const addCustom = () => {
     if (!customLabel.trim()) return;
@@ -36,20 +39,27 @@ export function ClubPickerSheet({
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            padding: theme.spacing.xl,
+            alignItems: 'center',
+            paddingHorizontal: theme.spacing.xl,
+            paddingTop: insets.top + theme.spacing.sm,
+            paddingBottom: theme.spacing.md,
           }}
         >
           <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>
             Añadir palo
           </Text>
-          <Pressable accessibilityRole="button" onPress={onClose}>
+          <Pressable accessibilityRole="button" onPress={onClose} hitSlop={theme.spacing.md}>
             <Text style={[theme.textVariants.bodyStrong, { color: theme.colors.accent }]}>
               Cerrar
             </Text>
           </Pressable>
         </View>
 
-        <ScrollView contentContainerStyle={{ paddingBottom: theme.spacing.xxxl }}>
+        <ScrollView
+          automaticallyAdjustKeyboardInsets
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingBottom: theme.spacing.xxxl }}
+        >
           {clubsByGroup().map(({ group, clubs }) => (
             <View key={group} style={{ marginBottom: theme.spacing.md }}>
               <Text
@@ -91,12 +101,19 @@ export function ClubPickerSheet({
                         accessibilityRole="button"
                         accessibilityLabel={`Añadir ${club.label}`}
                         onPress={() => onAddClub(club)}
+                        hitSlop={theme.spacing.md}
+                        style={({ pressed }) => ({
+                          width: 36,
+                          height: 36,
+                          borderRadius: 18,
+                          borderCurve: 'continuous',
+                          marginRight: theme.spacing.xs,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          backgroundColor: pressed ? theme.colors.accentDark : theme.colors.accent,
+                        })}
                       >
-                        <Text
-                          style={[theme.textVariants.bodyStrong, { color: theme.colors.accent }]}
-                        >
-                          +
-                        </Text>
+                        <Feather name="plus" size={22} color={theme.colors.accentOn} />
                       </Pressable>
                     )}
                   </View>

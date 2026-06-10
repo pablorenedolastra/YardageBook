@@ -10,6 +10,7 @@ describe('colors', () => {
         'danger',
         'ink',
         'line',
+        'markerTarget',
         'muted',
         'paper',
         'success',

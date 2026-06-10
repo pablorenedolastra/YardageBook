@@ -12,3 +12,39 @@ jest.mock('expo-font', () => ({
   loadAsync: jest.fn(() => Promise.resolve()),
   processFontFamily: jest.fn((family) => family),
 }));
+
+// react-native-maps es un módulo nativo (no va en jest). Lo mockeamos como Views
+// para poder hacer smoke tests de los componentes que lo usan (HoleMap).
+jest.mock('react-native-maps', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const Passthrough = ({ children, ...props }) => React.createElement(View, props, children);
+  return {
+    __esModule: true,
+    default: Passthrough, // MapView
+    Marker: Passthrough,
+    Polygon: Passthrough,
+    Polyline: Passthrough,
+  };
+});
+
+// react-native-safe-area-context: en tests no hay SafeAreaProvider, así que
+// devolvemos insets a 0 para los componentes que usan useSafeAreaInsets.
+jest.mock('react-native-safe-area-context', () => {
+  const actual = jest.requireActual('react-native-safe-area-context');
+  return {
+    ...actual,
+    useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+    useSafeAreaFrame: () => ({ x: 0, y: 0, width: 390, height: 844 }),
+  };
+});
+
+// expo-location: permiso concedido + posición fija, para tests deterministas.
+jest.mock('expo-location', () => ({
+  requestForegroundPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  watchPositionAsync: jest.fn(() => Promise.resolve({ remove: jest.fn() })),
+  getCurrentPositionAsync: jest.fn(() =>
+    Promise.resolve({ coords: { latitude: 36.28, longitude: -5.33 } }),
+  ),
+  Accuracy: { Balanced: 3, High: 4 },
+}));

@@ -1,6 +1,6 @@
 # YardageBook — Estado del proyecto y guía para retomar
 
-> **Última actualización:** 2026-06-09 · **Rama principal:** `main` (protegida) · **95 tests verdes**
+> **Última actualización:** 2026-06-09 · **Rama principal:** `main` (protegida) · **118 tests verdes**
 
 Documento vivo de continuidad. Si retomas el proyecto (o empiezas una sesión
 nueva), **lee esto primero**. Apunta a los specs y planes con el detalle.
@@ -25,7 +25,9 @@ dispositivo. La meteo y los datos de campos son las únicas fuentes externas.
 
 ## 2. Stack y arquitectura
 
-- **Expo SDK 56 + TypeScript estricto.** Navegación con **expo-router**.
+- **Expo SDK 54 + TypeScript estricto.** Navegación con **expo-router**.
+  (Se bajó de 56→54 el 2026-06-09 para poder probar en Expo Go: los dispositivos del
+  usuario topan Expo Go en SDK 54. Ver `docs/plans/2026-06-09-sdk-54-downgrade.md`.)
 - **Tabs a medida** (no nativas): `Tabs` de expo-router con `tabBar` propio
   (`src/ui/components/tab-bar.tsx`), para honrar el sistema de diseño y funcionar
   en preview web.
@@ -72,12 +74,15 @@ orden del spec de pantallas (§10).
 | 5.5 | Dominio de campos (`geo`/`course` + `haversineMeters`) | ✅ | #4 |
 | — | Fix solapamiento de pantallas en web | ✅ | #9 |
 | **6** | **Juego · Selección de campo** (servicio `courses` OSM real) | ✅ | #11 |
-| **7** | **Juego · Hoyo** (mapa, GPS, recomendación) — **requiere dev build** | ⏳ siguiente | — |
+| **7** | **Juego · Hoyo** (mapa, GPS, recomendación) — **se prueba en Expo Go iOS** | ✅ | #12 |
 
 **Funciona hoy (preview web):** onboarding completo (perfil → bolsa → guardar →
 entra a tabs), Yardage Book ver/editar, Perfil ver/editar (unidades cambian y
 persisten), gating (reabrir con perfil → directo a tabs), **Selección de campo**
-(buscar → resultados → elegir → recientes; placeholder de Hoyo 1).
+(buscar → resultados → elegir → recientes).
+
+**Solo en app (Expo Go iOS, no web):** **Juego · Hoyo** — mapa satélite, GPS, tocar
+para colocar objetivo, distancia haversine y barra de palo recomendado.
 
 ### Incremento 6 — hecho
 Plan: [`docs/plans/2026-06-09-inc6-course-selection.md`](plans/2026-06-09-inc6-course-selection.md).
@@ -97,12 +102,31 @@ Plan: [`docs/plans/2026-06-09-inc6-course-selection.md`](plans/2026-06-09-inc6-c
 > `node scripts/fetch-courses.mjs --batch` (o `--osm-way <id> --out ...` + regenerar)
 > suma campos sin perder los bajados. Ampliar el set queda como tarea de datos.
 
-### Incremento 7 (siguiente) — tareas (último; cambia el modo de ejecución)
-- `react-native-maps` (satélite) + `expo-location` (GPS) → **development build**
-  (no Expo Go ni web). `HoleMap`, `GpsMarker`, `TargetMarker` (onPress),
-  `AimLine`+`DistanceChip` (haversine→`recommendClub`), `RecommendationBar`,
-  `PlaysLikeToggle`, chip centro de green, `HoleNavBar`. **Atribución ODbL visible.**
-- Decisiones abiertas: lógica fina de Plays Like ON (origen de desnivel/meteo).
+### Incremento 7 — hecho
+Plan: [`docs/plans/2026-06-09-inc7-hole-map.md`](plans/2026-06-09-inc7-hole-map.md).
+- **`react-native-maps`** (no `expo-maps`, que está en alpha) + **`expo-location`**.
+  En SDK 54 ambos van en **Expo Go**; en **Android** Expo Go aporta su clave de Google
+  Maps (el mapa se ve sin configurar). Para una build standalone de Android haría falta
+  clave propia; iOS usa Apple Maps sin clave.
+- Pantalla `app/game/[courseId].tsx`: mapa satélite, permiso + `watchPositionAsync`,
+  tocar el mapa → objetivo, `haversineMeters` → `toUnitDistance` → `recommendClub`,
+  navegación de hoyos, chip al centro del green, atribución ODbL.
+- Componentes: `HoleMap` (único que importa `react-native-maps`; **`hole-map.web.tsx`**
+  de fallback para que `expo export --platform web` siga pasando), `GpsMarker`,
+  `TargetMarker`, `DistanceChip`, `RecommendationBar`, `PlaysLikeToggle`,
+  `GreenCenterChip`, `HoleNavBar`. Lógica pura con TDD: `toUnitDistance`, `hole-navigation`.
+- Mocks de `react-native-maps` + `expo-location` en `jest.setup.js`.
+
+> **Verificación:** typecheck/lint/test (118) + `expo export web` ✅ en CI local. La
+> **prueba real (GPS, tap, satélite) es en Expo Go iOS** — no automatizable aquí.
+
+> **Plays Like:** el toggle está cableado y **OFF es el flujo completo**; **ON es
+> neutro de momento** (elevación 0, sin meteo). La fuente real de desnivel/meteo
+> (implica red en campo, choca con offline-first) es **decisión abierta** para una
+> iteración posterior.
+
+> **Pendiente Android:** clave Google Maps (`react-native-maps` plugin) para el
+> mapa en Android. iOS/Apple Maps no la necesita.
 
 ---
 
@@ -164,11 +188,20 @@ node scripts/fetch-courses.mjs --name "Valderrama" --out assets/courses/valderra
 ## 7. Gotchas (cosas que ya nos han mordido)
 
 - **Preview web**: en este modo Expo NO abre el navegador solo → abrir
-  `http://localhost:8081` a mano. El Inc.7 (mapa/GPS) **no** se ve en web ni Expo
-  Go → necesita dev build.
-- **`jest.setup.js`** mockea `expo-font` incluyendo `isLoaded`/`loadAsync`
-  (lo necesita `@expo/vector-icons`). Si añades libs que tocan fuentes en tests,
-  amplía ese mock.
+  `http://localhost:8081` a mano. **Tras cambiar de rama, recarga forzada en el
+  navegador (Cmd+Shift+R)**: la caché vieja deja la web en blanco.
+- **Mapa (Inc.7)**: `react-native-maps` **no** renderiza en web (hay
+  `hole-map.web.tsx` de fallback para que el export no rompa). **Sí va en Expo Go
+  (SDK 54)** → la pantalla de Hoyo se prueba en **Expo Go (Android del usuario)**, no
+  en web. Para build standalone Android haría falta clave Google Maps propia.
+- **SDK 54, no 56**: el Expo Go de los dispositivos del usuario topa en 54. Si tocas
+  versiones, usa `npx expo install` (alinea a 54); algunas dev-deps (jest-expo,
+  eslint-config-expo, @types/react/jest, react-test-renderer) hay que fijarlas a mano.
+- **`StyleSheet.absoluteFill` no es spreadable** en los tipos de RN 0.81; para spread
+  usa `absoluteFillObject`.
+- **`jest.setup.js`** mockea `expo-font` (incl. `isLoaded`/`loadAsync` para
+  `@expo/vector-icons`) y también **`react-native-maps`** y **`expo-location`** (para
+  smoke tests). Si añades libs nativas que se usen en tests, amplía estos mocks.
 - **`tsconfig.json`** tiene `"types": ["jest", "react"]` (si no, `tsc` no ve los
   globals de Jest en los `.test.ts`).
 - **`TabBarProps`** se deriva del componente `Tabs` (no importar tipos de rutas

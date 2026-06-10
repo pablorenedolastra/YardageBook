@@ -22,6 +22,15 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-font", "expo-router"]
+    "plugins": [
+      "expo-font",
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "YardageBook usa tu ubicación para medir la distancia al objetivo en el campo."
+        }
+      ]
+    ]
   }
 }
