@@ -15,8 +15,12 @@ export interface HoleMapProps {
   playerInitial: string;
   /** Distancia GPS→objetivo, ya en la unidad del perfil (chip sobre la línea de tiro). */
   aimDistance: number | null;
+  /** Palo recomendado para la distancia GPS→objetivo. */
+  aimClub?: string | null;
   /** Distancia objetivo→centro del green, ya en la unidad del perfil. */
   toGreenDistance: number | null;
+  /** Palo recomendado para la distancia objetivo→green. */
+  toGreenClub?: string | null;
   unit: string;
   /** Recolocar el objetivo (tocar el mapa o arrastrar el marcador). */
   onMoveTarget: (p: LatLng) => void;
@@ -39,7 +43,9 @@ export function HoleMap({
   target,
   playerInitial,
   aimDistance,
+  aimClub,
   toGreenDistance,
+  toGreenClub,
   unit,
   onMoveTarget,
 }: HoleMapProps) {
@@ -137,14 +143,14 @@ export function HoleMap({
       {/* Chip distancia de tiro (GPS→objetivo) en el punto medio de su línea */}
       {gps && target && aimDistance != null ? (
         <Marker coordinate={toRN(midpoint(gps, target))} anchor={{ x: 0.5, y: 0.5 }}>
-          <DistanceChip distance={aimDistance} unit={unit} tone="ink" />
+          <DistanceChip distance={aimDistance} unit={unit} tone="ink" club={aimClub} />
         </Marker>
       ) : null}
 
       {/* Chip distancia objetivo→green en el punto medio de su línea */}
       {target && movedFromGreen && toGreenDistance != null ? (
         <Marker coordinate={toRN(midpoint(target, green))} anchor={{ x: 0.5, y: 0.5 }}>
-          <DistanceChip distance={toGreenDistance} unit={unit} tone="accent" />
+          <DistanceChip distance={toGreenDistance} unit={unit} tone="accent" club={toGreenClub} />
         </Marker>
       ) : null}
     </MapView>

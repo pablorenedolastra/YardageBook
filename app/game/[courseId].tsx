@@ -22,6 +22,7 @@ import { PrimaryButton } from '../../src/ui/components/primary-button';
 import { RecommendationBar } from '../../src/ui/components/recommendation-bar';
 import { toUnitDistance, unitLabel } from '../../src/ui/forms/units-format';
 import { clampHoleIndex, nextHole, prevHole } from '../../src/ui/game/hole-navigation';
+import { simulatedTeePosition } from '../../src/ui/game/sim-position';
 import { theme } from '../../src/ui/theme';
 
 type Permission = 'pending' | 'granted' | 'denied';
@@ -36,7 +37,10 @@ export default function HoleScreen() {
   const [loading, setLoading] = useState(true);
 
   const [permission, setPermission] = useState<Permission>('pending');
-  const [gps, setGps] = useState<LatLng | null>(null);
+  const [liveGps, setLiveGps] = useState<LatLng | null>(null);
+  // Posición simulada (solo desarrollo): tiene prioridad sobre el GPS real.
+  const [devGps, setDevGps] = useState<LatLng | null>(null);
+  const gps = devGps ?? liveGps;
 
   const [holeIndex, setHoleIndex] = useState(1);
   const [target, setTarget] = useState<LatLng | null>(null);
@@ -76,7 +80,7 @@ export default function HoleScreen() {
       setPermission('granted');
       sub = await Location.watchPositionAsync(
         { accuracy: Location.Accuracy.High, distanceInterval: 1 },
-        (loc) => setGps({ lat: loc.coords.latitude, lng: loc.coords.longitude }),
+        (loc) => setLiveGps({ lat: loc.coords.latitude, lng: loc.coords.longitude }),
       );
     })();
     return () => {
@@ -126,6 +130,12 @@ export default function HoleScreen() {
     if (!target || !hole) return null;
     return toUnitDistance(haversineMeters(target, hole.green.center), unit);
   }, [target, hole, unit]);
+
+  // Palo recomendado para la distancia objetivo→green (Plays Like OFF).
+  const toGreenRec = useMemo(() => {
+    if (!matrix || toGreenDistance == null || toGreenDistance < 1) return null;
+    return recommendClub({ targetDistance: toGreenDistance, matrix, elevationChange: 0 });
+  }, [matrix, toGreenDistance]);
 
   // Al navegar, el efecto de arriba recoloca el objetivo en el green del nuevo hoyo.
   const goPrev = () => setHoleIndex((i) => prevHole(i, holes.length));
@@ -186,7 +196,9 @@ export default function HoleScreen() {
         target={target}
         playerInitial={playerInitial}
         aimDistance={aimDistance}
+        aimClub={recommendation?.club.label ?? null}
         toGreenDistance={toGreenDistance}
+        toGreenClub={toGreenRec?.club.label ?? null}
         unit={unitL}
         onMoveTarget={setTarget}
       />
@@ -216,6 +228,18 @@ export default function HoleScreen() {
         style={[styles.bottom, { bottom: insets.bottom + theme.spacing.sm }]}
         pointerEvents="box-none"
       >
+        {__DEV__ ? (
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setDevGps(devGps ? null : simulatedTeePosition(hole))}
+            style={styles.devButton}
+          >
+            <Text style={[theme.textVariants.labelAccent, { color: theme.colors.accentOn }]}>
+              {devGps ? 'GPS SIMULADO ✓ (QUITAR)' : 'SIMULAR GPS EN EL TEE'}
+            </Text>
+          </Pressable>
+        ) : null}
+
         {matrix && matrix.entries.length > 0 ? (
           recommendation ? (
             <RecommendationBar
@@ -289,6 +313,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
     alignItems: 'center',
+  },
+  devButton: {
+    alignSelf: 'center',
+    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radius.pill,
+    borderCurve: 'continuous',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.xs,
   },
   attribution: {
     ...theme.textVariants.small,
