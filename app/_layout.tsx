@@ -20,6 +20,9 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: theme.colors.paper },
+          // Gesto nativo de volver deslizando desde el borde izquierdo (iOS).
+          // Solo borde (no fullScreen) para no chocar con el paneo del mapa.
+          gestureEnabled: true,
         }}
       />
     </SafeAreaProvider>
