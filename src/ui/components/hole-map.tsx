@@ -95,20 +95,20 @@ export function HoleMap({
         />
       ) : null}
 
-      {/* Línea de tiro: GPS → objetivo (ink) */}
+      {/* Línea de tiro: GPS → objetivo. Beige para no confundirse con el verde del campo. */}
       {gps && target ? (
         <Polyline
           coordinates={[gps, target].map(toRN)}
-          strokeColor={theme.colors.ink}
+          strokeColor={theme.colors.paper}
           strokeWidth={3}
         />
       ) : null}
 
-      {/* Línea objetivo → centro del green (acento), solo si el objetivo se ha movido */}
+      {/* Línea objetivo → centro del green (beige), solo si el objetivo se ha movido */}
       {target && movedFromGreen ? (
         <Polyline
           coordinates={[target, green].map(toRN)}
-          strokeColor={theme.colors.accent}
+          strokeColor={theme.colors.paper}
           strokeWidth={3}
         />
       ) : null}
@@ -130,7 +130,7 @@ export function HoleMap({
             onMoveTarget({ lat: c.latitude, lng: c.longitude });
           }}
         >
-          <TargetMarker color={theme.colors.accent} />
+          <TargetMarker color={theme.colors.paper} />
         </Marker>
       ) : null}
 
