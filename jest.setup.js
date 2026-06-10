@@ -28,6 +28,17 @@ jest.mock('react-native-maps', () => {
   };
 });
 
+// react-native-safe-area-context: en tests no hay SafeAreaProvider, así que
+// devolvemos insets a 0 para los componentes que usan useSafeAreaInsets.
+jest.mock('react-native-safe-area-context', () => {
+  const actual = jest.requireActual('react-native-safe-area-context');
+  return {
+    ...actual,
+    useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+    useSafeAreaFrame: () => ({ x: 0, y: 0, width: 390, height: 844 }),
+  };
+});
+
 // expo-location: permiso concedido + posición fija, para tests deterministas.
 jest.mock('expo-location', () => ({
   requestForegroundPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),

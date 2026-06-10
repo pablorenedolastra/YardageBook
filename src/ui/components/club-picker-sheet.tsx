@@ -1,6 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CatalogClub, clubsByGroup } from '../forms/clubs';
 import { theme } from '../theme';
 
@@ -23,6 +24,7 @@ export function ClubPickerSheet({
 }: ClubPickerSheetProps) {
   const [customLabel, setCustomLabel] = useState('');
   const added = new Set(addedClubIds);
+  const insets = useSafeAreaInsets();
 
   const addCustom = () => {
     if (!customLabel.trim()) return;
@@ -37,13 +39,16 @@ export function ClubPickerSheet({
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            padding: theme.spacing.xl,
+            alignItems: 'center',
+            paddingHorizontal: theme.spacing.xl,
+            paddingTop: insets.top + theme.spacing.sm,
+            paddingBottom: theme.spacing.md,
           }}
         >
           <Text style={[theme.textVariants.titleApp, { color: theme.colors.ink }]}>
             Añadir palo
           </Text>
-          <Pressable accessibilityRole="button" onPress={onClose}>
+          <Pressable accessibilityRole="button" onPress={onClose} hitSlop={theme.spacing.md}>
             <Text style={[theme.textVariants.bodyStrong, { color: theme.colors.accent }]}>
               Cerrar
             </Text>
