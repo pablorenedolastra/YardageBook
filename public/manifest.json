@@ -1,0 +1,20 @@
+{
+  "name": "YardageBook",
+  "short_name": "YardageBook",
+  "description": "Tu caddie de bolsillo: distancia y palo recomendado en el campo.",
+  "lang": "es",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EFE7D6",
+  "theme_color": "#EFE7D6",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
