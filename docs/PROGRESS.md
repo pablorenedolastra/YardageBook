@@ -28,6 +28,11 @@ dispositivo. La meteo y los datos de campos son las únicas fuentes externas.
 - **Expo SDK 54 + TypeScript estricto.** Navegación con **expo-router**.
   (Se bajó de 56→54 el 2026-06-09 para poder probar en Expo Go: los dispositivos del
   usuario topan Expo Go en SDK 54. Ver `docs/plans/2026-06-09-sdk-54-downgrade.md`.)
+- **Entrega del MVP: PWA (web)**, manteniendo la nativa para después (mismo repo).
+  El mapa web usa **Leaflet + Esri** (`hole-map.web.tsx`); el nativo sigue con
+  react-native-maps (`hole-map.tsx`). Build: `npm run build:web` → `dist/`.
+  Despliegue y prueba en iPhone: ver `docs/deploy-pwa.md`. Plan:
+  `docs/plans/2026-06-12-pwa-mvp.md`.
 - **Tabs a medida** (no nativas): `Tabs` de expo-router con `tabBar` propio
   (`src/ui/components/tab-bar.tsx`), para honrar el sistema de diseño y funcionar
   en preview web.
