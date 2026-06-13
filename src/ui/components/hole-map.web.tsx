@@ -69,9 +69,11 @@ export function HoleMap(props: HoleMapProps) {
     if (!containerRef.current || mapRef.current) return;
     const map = L.map(containerRef.current, {
       zoomControl: false,
-      attributionControl: true,
+      // El crédito (OSM + Esri) lo pinta la barra inferior de la pantalla, que va
+      // por encima del mapa; el control propio de Leaflet quedaría tapado.
+      attributionControl: false,
     }).setView(toLL(props.hole.green.center), 16);
-    L.tileLayer(ESRI_IMAGERY, { maxZoom: 19, attribution: 'Imágenes © Esri' }).addTo(map);
+    L.tileLayer(ESRI_IMAGERY, { maxZoom: 19 }).addTo(map);
     map.on('click', (e: L.LeafletMouseEvent) =>
       onMoveRef.current({ lat: e.latlng.lat, lng: e.latlng.lng }),
     );

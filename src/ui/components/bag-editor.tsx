@@ -55,6 +55,17 @@ export function BagEditor({ value, onChange }: BagEditorProps) {
         </View>
       </View>
 
+      {value.entries.length > 0 ? (
+        <View style={{ gap: theme.spacing.xs }}>
+          <Text style={[theme.textVariants.caption, { color: theme.colors.muted }]}>
+            Distancias de carry
+          </Text>
+          <Text style={[theme.textVariants.small, { color: theme.colors.muted }]}>
+            Indica lo que vuela la bola con cada palo, en tu unidad.
+          </Text>
+        </View>
+      ) : null}
+
       <View>
         {value.entries.map((entry) => (
           <View

@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Location from 'expo-location';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   ClubMatrix,
@@ -272,14 +272,16 @@ export default function HoleScreen() {
           onNext={goNext}
         />
 
-        <Text style={styles.attribution}>{course.attribution}</Text>
+        <Text style={styles.attribution}>
+          {Platform.OS === 'web' ? `${course.attribution} · Imágenes © Esri` : course.attribution}
+        </Text>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: theme.colors.ink },
+  root: { flex: 1, position: 'relative', backgroundColor: theme.colors.ink },
   centered: {
     flex: 1,
     alignItems: 'center',
@@ -289,6 +291,7 @@ const styles = StyleSheet.create({
   },
   topRow: {
     position: 'absolute',
+    zIndex: 1000,
     left: theme.spacing.lg,
     right: theme.spacing.lg,
     flexDirection: 'row',
@@ -298,10 +301,12 @@ const styles = StyleSheet.create({
   },
   back: {
     position: 'absolute',
+    zIndex: 1000,
     left: theme.spacing.lg,
   },
   bottom: {
     position: 'absolute',
+    zIndex: 1000,
     left: theme.spacing.lg,
     right: theme.spacing.lg,
     gap: theme.spacing.sm,
